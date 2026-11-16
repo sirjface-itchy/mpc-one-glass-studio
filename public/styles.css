@@ -240,8 +240,8 @@ body {
 /* Navigation Tabs */
 .glass-nav {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 12px;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
 }
 
 .nav-tab {
@@ -1573,4 +1573,110 @@ body {
   font-size: 0.74rem;
   font-family: var(--font-mono);
   color: #bae6fd;
+}
+
+/* Tab 6: Studio Samples, Keygroups (.xpm), Chords & Projects SD */
+.studio-tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.studio-tool-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.check-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border-glass);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.newbie-accordion {
+  margin-top: 10px;
+  background: rgba(0, 229, 255, 0.06);
+  border: 1px solid rgba(0, 229, 255, 0.22);
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 0.79rem;
+}
+
+.newbie-accordion summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--cyan);
+}
+
+.newbie-accordion ol {
+  margin-top: 8px;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: #e2e8f0;
+}
+
+.chord-pads-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.chord-pad {
+  background: rgba(15, 19, 29, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 10px;
+  padding: 10px 6px;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.chord-pad.active {
+  background: rgba(230, 25, 56, 0.22);
+  border-color: var(--akai-red);
+  color: #fff;
+  box-shadow: 0 0 14px rgba(230, 25, 56, 0.35);
+}
+
+.chord-pad strong {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--cyan);
+  margin-top: 2px;
+}
+
+.projects-list-box {
+  max-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.78rem;
+}
+
+.project-row {
+  background: rgba(11, 14, 22, 0.75);
+  border: 1px solid var(--border-glass);
+  border-radius: 10px;
+  padding: 9px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+@media (max-width: 1150px) {
+  .studio-tools-grid { grid-template-columns: 1fr; }
 }

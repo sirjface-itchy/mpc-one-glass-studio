@@ -92,6 +92,13 @@
           <div class="tab-desc">Tous Styles sur mesure (Plugins + Guides Newbie)</div>
         </div>
       </button>
+      <button class="nav-tab" data-tab="studio">
+        <span class="tab-icon">🎹</span>
+        <div>
+          <div class="tab-title">Samples, Keygroups & SD</div>
+          <div class="tab-desc">Convertisseur .wav, .xpm, Accords & Backup</div>
+        </div>
+      </button>
     </nav>
 
     <!-- Main Workspace Content -->
@@ -106,8 +113,16 @@
                 <h2>Agent Conversationnel MPC One (Modèle Original)</h2>
                 <p>Connecté à tes 74 sources NotebookLM + Release Notes MPC OS 3.9 / 3.10 / 3.10.1 + Ton compte inMusic</p>
               </div>
-              <div class="header-actions">
+              <div class="header-actions" style="display:flex; gap:8px; align-items:center;">
+                <button class="btn-glass-sm" id="geminiKeyBtn" title="Optionnel : connecte ta clé API Gemini pour des réponses IA libres">🔑 IA Gemini</button>
                 <button class="btn-glass-sm" id="clearChatBtn">Réinitialiser</button>
+              </div>
+            </div>
+            <div id="geminiKeyBar" style="display:none; margin-bottom:10px; padding:10px; border-radius:10px; background:rgba(0,229,255,0.06); border:1px solid rgba(0,229,255,0.25);">
+              <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+                <input type="password" id="geminiApiKeyInput" placeholder="Colle ta clé Gemini API (AIza...) — stockée uniquement dans ton navigateur" style="flex:1; min-width:220px;" />
+                <button class="btn-secondary-glass" id="saveGeminiKeyBtn">💾 Activer IA Libre</button>
+                <span id="geminiKeyStatus" style="font-size:0.75rem; color:var(--cyan);"></span>
               </div>
             </div>
 
@@ -443,6 +458,7 @@
                     <select id="sdkDspTemplate">
                       <optgroup label="Effets Audio (Insert / Send)">
                         <option value="lofi" selected>Saturation Bande + Crunch 12-Bit + Filtre Tone</option>
+                        <option value="channelstrip">⭐ Channel Strip Tout-en-Un (HPF + Tape + Chorus + Clipper)</option>
                         <option value="dubdelay">Stereo Dub Delay (Synchro BPM + Ping-Pong + SoftClip)</option>
                         <option value="filter">Filtre Analogique Résonant (SVF + Drive + LFO)</option>
                         <option value="chorus">Chorus Stéréo Analogique (Modulation L/R + Warmth)</option>
@@ -459,12 +475,12 @@
 
                 <div class="sdk-sampler-box" id="sdkSamplerBox" style="display: none;">
                   <div class="sdk-sampler-header">
-                    <strong>🎹 Charger un Sample Audio (<code>.wav</code>) dans ton Instrument</strong>
-                    <span>Embarqué dans <code>Content/Samples/instrument.wav</code></span>
+                    <strong>🎹 Charger 1 ou 3 Samples Audio (<code>.wav</code>) dans ton Instrument</strong>
+                    <span>Embarqué dans <code>Content/Samples/</code></span>
                   </div>
                   <div class="form-row" style="margin-top: 8px;">
                     <div class="form-group">
-                      <label>Fichier Audio (<code>.wav</code> 16/24/32-bit, max 15 Mo) :</label>
+                      <label>Sample Principal (<code>instrument.wav</code>, max 15 Mo) :</label>
                       <input type="file" id="sdkWavFile" accept=".wav,audio/wav" />
                     </div>
                     <div class="form-group">
@@ -475,6 +491,16 @@
                         <option value="69">A3 (MIDI 69 - La 440)</option>
                         <option value="72">C4 (MIDI 72 - Aigu)</option>
                       </select>
+                    </div>
+                  </div>
+                  <div class="form-row" style="margin-top: 6px;">
+                    <div class="form-group">
+                      <label>Zone Grave (&lt; E3) optionnelle (<code>low.wav</code>) :</label>
+                      <input type="file" id="sdkWavLow" accept=".wav,audio/wav" />
+                    </div>
+                    <div class="form-group">
+                      <label>Zone Aiguë (≥ E4) optionnelle (<code>high.wav</code>) :</label>
+                      <input type="file" id="sdkWavHigh" accept=".wav,audio/wav" />
                     </div>
                   </div>
                   <div id="sdkWavStatus" class="sdk-wav-status">Aucun .wav sélectionné (repli automatique sur une onde chaude intégrée pour tester).</div>
@@ -568,13 +594,24 @@
 
                 <!-- Code & Live Build Console Tabs -->
                 <div class="code-viewer">
-                  <div class="code-tabs">
-                    <button class="code-tab active" data-codetab="cpp">src/Plugin.cpp (MPC SDK)</button>
-                    <button class="code-tab" data-codetab="pluginjson">plugin.json</button>
-                    <button class="code-tab" data-codetab="uijson">ui.json (Skin)</button>
-                    <button class="code-tab" data-codetab="log" id="tabBuildLog">🖥 Journal de Compilation (Live)</button>
+                  <div class="code-tabs" style="justify-content:space-between; align-items:center; flex-wrap:wrap;">
+                    <div style="display:flex;">
+                      <button class="code-tab active" data-codetab="cpp">src/Plugin.cpp (MPC SDK)</button>
+                      <button class="code-tab" data-codetab="pluginjson">plugin.json</button>
+                      <button class="code-tab" data-codetab="uijson">ui.json (Skin)</button>
+                      <button class="code-tab" data-codetab="log" id="tabBuildLog">🖥 Journal de Compilation (Live)</button>
+                    </div>
+                    <div style="display:flex; gap:6px; padding:4px 8px;">
+                      <button type="button" class="btn-glass-sm" id="toggleCppEditBtn">✏️ Éditer C++</button>
+                      <button type="button" class="btn-glass-sm" id="saveCustomPluginBtn">💾 Sauver Preset</button>
+                    </div>
                   </div>
                   <pre class="code-block" id="sdkCodeDisplay"></pre>
+                  <textarea class="code-block" id="sdkCppEditor" style="display:none; width:100%; min-height:260px; background:#0b0e16; border:none; outline:none; resize:vertical;"></textarea>
+                </div>
+                <div id="savedPluginsBar" style="margin-top:10px; display:none;">
+                  <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:5px;">📚 Mes Plugins Custom sauvegardés :</div>
+                  <div id="savedPluginsList" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
                 </div>
               </div>
             </div>
@@ -634,6 +671,127 @@
             <div class="template-guide-box" id="tplNewbieGuide">
               <!-- Rempli dynamiquement selon le style sélectionné -->
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 6: STUDIO SAMPLES (.WAV), KEYGROUPS (.XPM), ACCORDS & PROJETS SD -->
+      <section class="tab-panel" id="panel-studio">
+        <div class="studio-tools-grid">
+          <!-- 1. Convertisseur & Préparateur WAV -->
+          <div class="glass-card studio-tool-card">
+            <div class="card-header">
+              <div>
+                <h2>🎧 1. Préparateur de Samples MPC One (<code>.wav</code> 44.1 kHz)</h2>
+                <p>Glisse tes enregistrements (Numark Scratch, Logic Pro, MP3/WAV) : coupe le silence, normalise à -0.5 dB, estime le BPM et exporte en <code>.wav</code> propre.</p>
+              </div>
+              <span class="badge-live">100% NAVIGATEUR</span>
+            </div>
+            <div class="form-group">
+              <label>Choisis un fichier audio (<code>.wav</code>, <code>.mp3</code>, <code>.aiff</code>, <code>.m4a</code>) :</label>
+              <input type="file" id="prepAudioInput" accept="audio/*" />
+            </div>
+            <div class="form-row-2">
+              <label class="check-pill"><input type="checkbox" id="prepTrimSilence" checked /> Couper le silence au début/fin</label>
+              <label class="check-pill"><input type="checkbox" id="prepNormalize" checked /> Normaliser (-0.5 dB)</label>
+            </div>
+            <div id="prepAudioInfo" class="sdk-wav-status" style="margin:8px 0;">En attente d'un fichier audio...</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
+              <button class="btn-secondary-glass" id="prepPlayBtn" disabled>▶️ Écouter</button>
+              <button class="btn-primary" id="prepExportBtn" disabled>⬇️ Télécharger .WAV prêt pour MPC One</button>
+            </div>
+            <details class="newbie-accordion" open>
+              <summary>📖 Guide Newbie : Où mettre ce .wav sur ta MPC One ?</summary>
+              <ol>
+                <li>Copie le fichier <code>.wav</code> téléchargé dans un dossier <code>Samples/</code> à la racine de ta <strong>Carte SD</strong>.</li>
+                <li>Sur ta MPC One, appuie sur <code>BROWSE</code> → touche <strong>Places</strong> → choisis ta <strong>Carte SD</strong> → ouvre <code>Samples/</code>.</li>
+                <li>Touche ton fichier pour l'écouter (<strong>Audition</strong>) puis appuie sur <strong>Load</strong>.</li>
+                <li>Appuie sur <code>SAMPLE EDIT</code> pour le découper (<strong>CHOP</strong>) ou l'assigner à un Pad !</li>
+              </ol>
+            </details>
+          </div>
+
+          <!-- 2. Générateur de Keygroup Multi-Notes (.xpm) -->
+          <div class="glass-card studio-tool-card">
+            <div class="card-header">
+              <div>
+                <h2>🎹 2. Créateur de Keygroup Multi-Notes (<code>.xpm</code>)</h2>
+                <p>Dépose plusieurs <code>.wav</code> (ex. <code>Piano_C2.wav</code>, <code>Piano_C3.wav</code>, <code>Piano_C4.wav</code>) : crée un instrument Keygroup complet en <code>.zip</code> pour ta Carte SD.</p>
+              </div>
+              <span class="badge-live">FORMAT NATIF .XPM</span>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Nom de l'Instrument Keygroup :</label>
+                <input type="text" id="kgName" value="Arnaud_Custom_Keys" />
+              </div>
+              <div class="form-group">
+                <label>Fichiers <code>.wav</code> (1 à 12 notes) :</label>
+                <input type="file" id="kgFilesInput" accept=".wav,audio/wav" multiple />
+              </div>
+            </div>
+            <div id="kgZonesPreview" class="sdk-wav-status" style="margin:6px 0;">Astuce : nomme tes fichiers avec la note (ex: <code>C2</code>, <code>F#3</code>, <code>A4</code>) pour un mapping automatique !</div>
+            <button class="btn-primary" id="kgBuildZipBtn" style="margin-top:8px;">📦 Générer le Keygroup (.xpm + .wav en .zip)</button>
+            <details class="newbie-accordion" open>
+              <summary>📖 Guide Newbie : Comment jouer ce Keygroup sur ta MPC One ?</summary>
+              <ol>
+                <li>Dézippe le pack dans un dossier <code>Expansions/Mes Keygroups/</code> sur ta <strong>Carte SD</strong>.</li>
+                <li>Sur la MPC One : appuie sur <code>MAIN</code> → ajoute une piste (<code>+</code>) de type <strong>Keygroup</strong> (icône de touches de piano).</li>
+                <li>Appuie sur <code>BROWSE</code> → sélectionne le fichier <code>.xpm</code> → touche <strong>Load</strong>.</li>
+                <li>Branche ton <strong>MPK49</strong> ou appuie sur <code>PAD PERFORM</code> pour jouer l'instrument sur plusieurs octaves !</li>
+              </ol>
+            </details>
+          </div>
+
+          <!-- 3. Assistant Accords & Gammes PAD PERFORM -->
+          <div class="glass-card studio-tool-card">
+            <div class="card-header">
+              <div>
+                <h2>🎼 3. Assistant Accords & Gammes (<code>PAD PERFORM</code>)</h2>
+                <p>Ne joue plus jamais une fausse note : choisis ta tonalité et ton style pour voir exactement quels pads presser sur ta MPC One.</p>
+              </div>
+              <span class="badge-live">16 PADS VISUELS</span>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Note Fondamentale (Root) :</label>
+                <select id="chordRootSel">
+                  <option value="C" selected>C (Do)</option><option value="C#">C# / Db</option><option value="D">D (Ré)</option>
+                  <option value="D#">D# / Eb</option><option value="E">E (Mi)</option><option value="F">F (Fa)</option>
+                  <option value="F#">F# / Gb</option><option value="G">G (Sol)</option><option value="G#">G# / Ab</option>
+                  <option value="A">A (La)</option><option value="A#">A# / Bb</option><option value="B">B (Si)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Ambiance / Progression :</label>
+                <select id="chordStyleSel">
+                  <option value="boombap" selected>Boom-Bap / Jazz Mineur (i - VI - iv - v)</option>
+                  <option value="neosoul">Neo-Soul / R&B Maj9 (ii9 - V13 - Imaj9 - vi9)</option>
+                  <option value="trap">Trap Sombre Phrygien (i - bII - VII - i)</option>
+                  <option value="house">French Touch / House 7th (vi7 - IVmaj7 - I - V)</option>
+                </select>
+              </div>
+            </div>
+            <div id="chordPadsVisual" class="chord-pads-grid"></div>
+            <div id="chordNewbieSteps" class="newbie-tip" style="margin-top:10px;"></div>
+          </div>
+
+          <!-- 4. Inspecteur de Projets .xpj & Backup Carte SD -->
+          <div class="glass-card studio-tool-card">
+            <div class="card-header">
+              <div>
+                <h2>💾 4. Inspecteur de Projets & Sauvegarde Carte SD</h2>
+                <p>Analyse tes morceaux <code>.xpj</code> (BPM, pistes, plugins) dans <code>SD MPC ONE SAVE</code> et sauvegarde ta Carte SD en 1 clic.</p>
+              </div>
+              <span class="badge-live">LOCAL MAC SERVER</span>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+              <button class="btn-secondary-glass" id="scanProjectsBtn">🔍 Scanner mes projets .xpj</button>
+              <select id="backupSourceDrive" style="flex:1; min-width:180px;"></select>
+              <button class="btn-primary" id="runBackupSdBtn">💾 Sauvegarder vers SSD</button>
+            </div>
+            <div id="sdBackupStatus" class="sdk-wav-status" style="margin-bottom:8px;"></div>
+            <div id="projectsListBox" class="projects-list-box">Clique sur <strong>Scanner mes projets .xpj</strong> pour voir l'inventaire de tes morceaux.</div>
           </div>
         </div>
       </section>

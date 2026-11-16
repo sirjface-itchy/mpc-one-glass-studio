@@ -1,7 +1,11 @@
+import { generateTemplateClientSide, initStudioTab } from './studio_tools.js';
+
 let arsenalData = null;
 let selectedInstrumentIndex = 0;
 let selectedQBankIndex = 0;
 let activeCodeTab = 'cpp';
+let customCppOverride = null;
+let uploadedWavZones = { low: null, high: null };
 
 const HW_SHORTCUTS = [
   { btn: "MAIN / TRACK", info: "En MPC 3.10 : Appui simple = Main Mode (Pistes unifiées 1:1 + XL Channel Strip). Double appui ou maintien = Arrange Mode linéaire avec le nouvel outil Marquee !" },
@@ -80,6 +84,7 @@ async function initApp() {
   initBridgeTab();
   initSdkTab();
   initTemplatesTab();
+  initStudioTab();
 }
 
 function setupTabs() {
@@ -130,6 +135,30 @@ function initChat() {
     chatMessages.innerHTML = '';
     appendMessage('agent', welcomeHtml);
   });
+
+  // Optional Gemini API Key for free-form AI questions
+  const keyBtn = document.getElementById('geminiKeyBtn');
+  const keyBar = document.getElementById('geminiKeyBar');
+  const keyInp = document.getElementById('geminiApiKeyInput');
+  const keyStatus = document.getElementById('geminiKeyStatus');
+  const savedKey = localStorage.getItem('mpc_gemini_api_key') || '';
+  if (savedKey && keyInp) {
+    keyInp.value = savedKey;
+    if (keyStatus) keyStatus.textContent = '✅ IA Gemini active';
+  }
+  keyBtn?.addEventListener('click', () => {
+    if (keyBar) keyBar.style.display = keyBar.style.display === 'none' ? 'block' : 'none';
+  });
+  document.getElementById('saveGeminiKeyBtn')?.addEventListener('click', () => {
+    const val = (keyInp?.value || '').trim();
+    if (val) {
+      localStorage.setItem('mpc_gemini_api_key', val);
+      if (keyStatus) keyStatus.textContent = '✅ Clé sauvegardée (IA libre active !)';
+    } else {
+      localStorage.removeItem('mpc_gemini_api_key');
+      if (keyStatus) keyStatus.textContent = 'Clé effacée (mode RAG local)';
+    }
+  });
 }
 
 function appendMessage(role, html) {
@@ -141,10 +170,29 @@ function appendMessage(role, html) {
   chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function handleUserQuery(query) {
+async function handleUserQuery(query) {
   appendMessage('user', `<p>${escapeHtml(query)}</p>`);
+  const apiKey = localStorage.getItem('mpc_gemini_api_key');
+  if (apiKey) {
+    try {
+      const sysPrompt = `Tu es l'assistant expert MPC One (modèle original, OS 3.10.1 Standalone) d'Arnaud Rigogne. Tu connais son matériel (MPC One série A12201241842841, Numark Scratch, MPK49, MPD218) et ses plugins inMusic (AIR Flavor Pro, Sub Factory, Ether, Sprite, Soft Clipper, Flex Beat, MSXII Fly Tape II & Lo-Fly Dirt, NI Analog Dreams/Cloud Supply/Duets/Ignition Keys/Global Shake, Expansions Pad Thai, Premier Beats, DECAP, LoFi Jazz, Soul Provider 3, etc.). Réponds TOUJOURS en français, de façon ultra claire pour un débutant (Newbie) en détaillant chaque bouton physique (MENU, MAIN, BROWSE, SAMPLER, SAMPLE EDIT, PAD PERFORM, Q-LINK, TC) et chaque touche tactile. Formate ta réponse en HTML simple (<p>, <h4>, <ol>, <li>, <code>, <strong>).`;
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: `${sysPrompt}\n\nQuestion utilisateur : ${query}` }] }]
+        })
+      });
+      const data = await resp.json();
+      const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
+      if (text) {
+        appendMessage('agent', text.replace(/^```html\s*/i, '').replace(/```$/, ''));
+        return;
+      }
+    } catch (_) {}
+  }
   const answer = generateExpertResponse(query);
-  setTimeout(() => appendMessage('agent', answer), 220);
+  setTimeout(() => appendMessage('agent', answer), 200);
 }
 
 function generateExpertResponse(q) {
@@ -586,6 +634,83 @@ async function initSdkTab() {
     reader.readAsDataURL(file);
   });
 
+  ['low', 'high'].forEach(zone => {
+    const id = zone === 'low' ? 'sdkWavLow' : 'sdkWavHigh';
+    document.getElementById(id)?.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file) { uploadedWavZones[zone] = null; return; }
+      const r = new FileReader();
+      r.onload = () => {
+        uploadedWavZones[zone] = r.result;
+        const statusEl = document.getElementById('sdkWavStatus');
+        if (statusEl) statusEl.textContent += ` | Zone ${zone}: ${file.name}`;
+      };
+      r.readAsDataURL(file);
+    });
+  });
+
+  const cppEditor = document.getElementById('sdkCppEditor');
+  const codeDisplay = document.getElementById('sdkCodeDisplay');
+  const editBtn = document.getElementById('toggleCppEditBtn');
+  editBtn?.addEventListener('click', () => {
+    const isEditing = cppEditor.style.display !== 'none';
+    if (!isEditing) {
+      cppEditor.value = customCppOverride || buildSdkBundle().cppCode;
+      cppEditor.style.display = 'block';
+      codeDisplay.style.display = 'none';
+      editBtn.textContent = '👁️ Aperçu lecture';
+    } else {
+      customCppOverride = cppEditor.value;
+      cppEditor.style.display = 'none';
+      codeDisplay.style.display = 'block';
+      editBtn.textContent = '✏️ Éditer C++';
+      updateSdkPreview();
+    }
+  });
+  cppEditor?.addEventListener('input', () => { customCppOverride = cppEditor.value; });
+
+  const renderSavedPlugins = () => {
+    const bar = document.getElementById('savedPluginsBar');
+    const list = document.getElementById('savedPluginsList');
+    const saved = JSON.parse(localStorage.getItem('mpc_custom_plugins') || '[]');
+    if (!bar || !list) return;
+    if (!saved.length) { bar.style.display = 'none'; return; }
+    bar.style.display = 'block';
+    list.innerHTML = saved.map((p, i) => `<button type="button" class="prompt-chip-mini" data-saved-idx="${i}">⚡ ${escapeHtml(p.name)} (${p.dsp})</button>`).join('');
+    list.querySelectorAll('[data-saved-idx]').forEach(b => {
+      b.addEventListener('click', () => {
+        const item = saved[Number(b.dataset.savedIdx)];
+        if (!item) return;
+        document.getElementById('sdkPluginName').value = item.name;
+        document.getElementById('sdkVendorName').value = item.vendor;
+        document.getElementById('sdkDspTemplate').value = item.dsp;
+        document.getElementById('sdkQ1').value = item.q1;
+        document.getElementById('sdkQ2').value = item.q2;
+        document.getElementById('sdkQ3').value = item.q3;
+        document.getElementById('sdkQ4').value = item.q4;
+        customCppOverride = item.customCpp || null;
+        toggleSamplerBox();
+        updateSdkPreview();
+      });
+    });
+  };
+  document.getElementById('saveCustomPluginBtn')?.addEventListener('click', () => {
+    const saved = JSON.parse(localStorage.getItem('mpc_custom_plugins') || '[]');
+    saved.unshift({
+      name: document.getElementById('sdkPluginName').value,
+      vendor: document.getElementById('sdkVendorName').value,
+      dsp: document.getElementById('sdkDspTemplate').value,
+      q1: document.getElementById('sdkQ1').value,
+      q2: document.getElementById('sdkQ2').value,
+      q3: document.getElementById('sdkQ3').value,
+      q4: document.getElementById('sdkQ4').value,
+      customCpp: customCppOverride
+    });
+    localStorage.setItem('mpc_custom_plugins', JSON.stringify(saved.slice(0, 12)));
+    renderSavedPlugins();
+  });
+  renderSavedPlugins();
+
   // Synchronize category & template nicely
   document.getElementById('sdkPluginCategory').addEventListener('change', (e) => {
     const cat = e.target.value;
@@ -754,7 +879,7 @@ function buildSdkBundle() {
   };
 
   const rootNote = Number(document.getElementById('sdkRootNote')?.value || 60);
-  const cppCode = generateSdkCppCode({ folderName, vendor, className, uid, isInstrument, dsp, q1, q2, q3, q4, rootNote });
+  const cppCode = customCppOverride || generateSdkCppCode({ folderName, vendor, className, uid, isInstrument, dsp, q1, q2, q3, q4, rootNote });
 
   return {
     folderName,
@@ -765,6 +890,7 @@ function buildSdkBundle() {
     kind,
     targetDriveId,
     wavBase64: dsp === 'sampler' ? uploadedWavBase64 : null,
+    wavZonesBase64: dsp === 'sampler' ? uploadedWavZones : null,
     cppCode,
     pluginJson: JSON.stringify(pluginJsonObj, null, 2),
     uiJson: JSON.stringify(uiJsonObj, null, 2)
@@ -1296,6 +1422,70 @@ MPC_PLUGIN_ENTRY(${className})
 `;
   }
 
+  if (dsp === 'channelstrip') {
+    return `// ${folderName} — All-in-One Channel Strip (HPF + Tape Drive + Chorus + Clipper) by ${vendor}
+#include "mpc_plugin.h"
+#include "dsp/onepole.h"
+#include "dsp/delay_line.h"
+#include <cmath>
+
+namespace {
+enum ParamIndex { kHpf = 0, kDrive, kChorus, kClipOut, kNumParams };
+constexpr float kPi = 3.14159265358979f;
+} // namespace
+
+class ${className} : public mpc::Plugin {
+public:
+    ${className}() : mpc::Plugin(makeInfo()) {
+        addParam(mpc::logParam  ("p1", "${q1}", 20.0f, 600.0f, 80.0f, "Hz", 0));
+        addParam(mpc::floatParam("p2", "${q2}", 0.0f,  18.0f,  4.0f,  "dB", 1));
+        addParam(mpc::floatParam("p3", "${q3}", 0.0f,  100.0f, 20.0f, "%",  0));
+        addParam(mpc::floatParam("p4", "${q4}", -12.0f, 0.0f,  -0.5f, "dB", 1));
+        addProgram("BoomBap Strip", {95.0f, 6.0f, 15.0f, -0.5f});
+        addProgram("Synth Glue",    {45.0f, 3.0f, 45.0f, -1.0f});
+    }
+    void prepare(double sr, int) override {
+        sampleRate_ = (float)sr;
+        const int maxS = (int)(sr * 0.05) + 4;
+        dl_.prepare(maxS); dr_.prepare(maxS);
+        reset();
+    }
+    void reset() override { hpL_.reset(); hpR_.reset(); dl_.reset(); dr_.reset(); lfo_ = 0.0f; }
+    void process(mpc::ProcessContext& ctx) override {
+        hpL_.setCutoff(get(kHpf), sampleRate_); hpR_.setCutoff(get(kHpf), sampleRate_);
+        const float drive = std::pow(10.0f, get(kDrive) / 20.0f);
+        const float chMix = get(kChorus) * 0.005f;
+        const float outG  = std::pow(10.0f, get(kClipOut) / 20.0f);
+        const float lfoInc = 0.75f / sampleRate_;
+        const float baseS = 0.009f * sampleRate_;
+        const float depthS = 0.004f * sampleRate_;
+        const float* inL = ctx.inputs[0];
+        const float* inR = ctx.numInputs > 1 ? ctx.inputs[1] : ctx.inputs[0];
+        float* outL = ctx.outputs[0];
+        float* outR = ctx.numOutputs > 1 ? ctx.outputs[1] : nullptr;
+        for (int i = 0; i < ctx.numFrames; ++i) {
+            const float sL = std::sin(2.0f * kPi * lfo_);
+            const float sR = std::cos(2.0f * kPi * lfo_);
+            lfo_ += lfoInc; if (lfo_ >= 1.0f) lfo_ -= 1.0f;
+            float xL = std::tanh(hpL_.process(inL[i]) * drive);
+            float xR = std::tanh(hpR_.process(inR[i]) * drive);
+            dl_.write(xL); dr_.write(xR);
+            const float wL = dl_.readLinear(baseS + sL * depthS);
+            const float wR = dr_.readLinear(baseS + sR * depthS);
+            outL[i] = std::tanh((xL + (wL - xL) * chMix) * outG);
+            if (outR) outR[i] = std::tanh((xR + (wR - xR) * chMix) * outG);
+        }
+    }
+private:
+${infoBlock}
+    mpc::dsp::OnePoleHP hpL_, hpR_;
+    mpc::dsp::DelayLine dl_, dr_;
+    float lfo_ = 0.0f, sampleRate_ = 44100.0f;
+};
+MPC_PLUGIN_ENTRY(${className})
+`;
+  }
+
   // Default: LoFi Vinyl Crusher
   return `// ${folderName} — Native MPC Standalone Lo-Fi Effect by ${vendor}
 #include "mpc_plugin.h"
@@ -1665,12 +1855,29 @@ function initTemplatesTab() {
     };
 
     try {
-      const resp = await fetch('/api/generate-template', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-      const data = await resp.json();
+      let data;
+      try {
+        if (location.hostname.endsWith('github.io') || mode !== 'drive') {
+          if (mode === 'drive') throw new Error('Le copie directe sur Carte SD nécessite le serveur local Mac (node server.mjs).');
+          const resp = await fetch('/api/generate-template', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!resp.ok) throw new Error('Fallback client-side');
+          data = await resp.json();
+        } else {
+          const resp = await fetch('/api/generate-template', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          data = await resp.json();
+        }
+      } catch (serverErr) {
+        if (mode === 'drive') throw serverErr;
+        data = await generateTemplateClientSide(payload);
+      }
       if (!data.ok) throw new Error(data.error || 'Erreur de génération');
 
       if (mode === 'zip') {

@@ -144,13 +144,25 @@ const server = http.createServer(async (req, res) => {
         fs.writeFileSync(path.join(pluginDir, 'README.md'), `# ${folderName}\n\nBuilt with Akai MPC Plugin SDK (OS 3.10.1) by ${vendor}.\n`, 'utf8');
 
         let wavStatusMsg = '';
+        const samplesDir = path.join(pluginDir, 'Content', 'Samples');
         if (payload.wavBase64 && typeof payload.wavBase64 === 'string') {
           const cleanB64 = payload.wavBase64.replace(/^data:[^;]+;base64,/, '');
           const wavBuf = Buffer.from(cleanB64, 'base64');
-          const samplesDir = path.join(pluginDir, 'Content', 'Samples');
           fs.mkdirSync(samplesDir, { recursive: true });
           fs.writeFileSync(path.join(samplesDir, 'instrument.wav'), wavBuf);
-          wavStatusMsg = `\nSample audio intégré : Content/Samples/instrument.wav (${(wavBuf.length / 1024).toFixed(1)} KB)`;
+          wavStatusMsg += `\nSample audio intégré : Content/Samples/instrument.wav (${(wavBuf.length / 1024).toFixed(1)} KB)`;
+        }
+        if (payload.wavZonesBase64 && typeof payload.wavZonesBase64 === 'object') {
+          for (const zone of ['low', 'mid', 'high']) {
+            const b64 = payload.wavZonesBase64[zone];
+            if (b64 && typeof b64 === 'string') {
+              const cleanB64 = b64.replace(/^data:[^;]+;base64,/, '');
+              const wavBuf = Buffer.from(cleanB64, 'base64');
+              fs.mkdirSync(samplesDir, { recursive: true });
+              fs.writeFileSync(path.join(samplesDir, `${zone}.wav`), wavBuf);
+              wavStatusMsg += `\nZone ${zone}.wav intégrée (${(wavBuf.length / 1024).toFixed(1)} KB)`;
+            }
+          }
         }
 
         let fullLog = `=== [ÉTAPE 1] CRÉATION DU PROJET SDK OFFICIEL ===\nDossier : ${pluginDir}\nFichiers écrits : plugin.json, ui.json, src/${className}.cpp${wavStatusMsg}\n\n`;
@@ -403,6 +415,119 @@ const server = http.createServer(async (req, res) => {
           deployedPath,
           sizeBytes: xpjBuffer.length
         }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ ok: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
+  // Scan existing .xpj projects on SD Save / Workspace
+  if (url.pathname === '/api/projects' && req.method === 'GET') {
+    const scanDirs = [
+      '/Volumes/base SSD/SD MPC ONE SAVE',
+      path.join(__dirname, 'Templates MPC One')
+    ].filter(dir => fs.existsSync(dir));
+
+    const projects = [];
+    for (const dir of scanDirs) {
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (!entry.isFile() || !entry.name.toLowerCase().endsWith('.xpj')) continue;
+          const fullPath = path.join(dir, entry.name);
+          const stat = fs.statSync(fullPath);
+          let bpm = null, trackCount = 0, plugins = [], hasProjectData = false;
+          const baseName = entry.name.slice(0, -4);
+          hasProjectData = fs.existsSync(path.join(dir, `${baseName}_[ProjectData]`));
+          try {
+            const raw = zlib.gunzipSync(fs.readFileSync(fullPath)).toString('utf8');
+            const jsonStart = raw.indexOf('{');
+            if (jsonStart >= 0) {
+              const parsed = JSON.parse(raw.slice(jsonStart));
+              const d = parsed.data || parsed;
+              bpm = d.masterTempo || d.sequences?.[0]?.value?.bpm || null;
+              const tracks = d.tracks || [];
+              trackCount = tracks.length;
+              const pSet = new Set();
+              for (const tr of tracks) {
+                const inst = tr.program?.plugin?.plugin?.description?.name;
+                if (inst) pSet.add(inst);
+                const effs = tr.program?.mixable?.inserts?.effects || [];
+                for (const ef of effs) {
+                  const fx = ef.plugin?.description?.name;
+                  if (fx) pSet.add(fx);
+                }
+              }
+              plugins = [...pSet];
+            }
+          } catch (_) {}
+          projects.push({
+            name: baseName,
+            fileName: entry.name,
+            folder: dir,
+            sizeKB: Math.round(stat.size / 1024),
+            modified: stat.mtime.toISOString().slice(0, 10),
+            bpm: bpm ? Math.round(bpm * 10) / 10 : null,
+            trackCount,
+            plugins,
+            hasProjectData
+          });
+        }
+      } catch (_) {}
+    }
+
+    res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+    res.end(JSON.stringify({ ok: true, scanDirs, projects }));
+    return;
+  }
+
+  // Incremental SD Card Backup -> /Volumes/base SSD/SD MPC ONE SAVE (or local backup)
+  if (url.pathname === '/api/backup-sd' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const drives = listAvailableDrives();
+        const srcDrive = drives.find(d => d.id === payload.sourceDriveId);
+        if (!srcDrive) throw new Error('Disque source introuvable.');
+        const srcRoot = path.dirname(srcDrive.targetDir);
+        const destRoot = fs.existsSync('/Volumes/base SSD/SD MPC ONE SAVE')
+          ? '/Volumes/base SSD/SD MPC ONE SAVE'
+          : path.join(__dirname, 'SD_BACKUP');
+        fs.mkdirSync(destRoot, { recursive: true });
+
+        if (path.resolve(srcRoot) === path.resolve(destRoot)) {
+          throw new Error('La source et la destination de sauvegarde sont identiques.');
+        }
+
+        let copiedFiles = 0;
+        let skippedFiles = 0;
+        const entries = fs.readdirSync(srcRoot, { withFileTypes: true });
+        for (const entry of entries) {
+          if (entry.name.startsWith('.')) continue;
+          if (entry.isFile() && entry.name.toLowerCase().endsWith('.xpj')) {
+            const sPath = path.join(srcRoot, entry.name);
+            const dPath = path.join(destRoot, entry.name);
+            const sStat = fs.statSync(sPath);
+            if (!fs.existsSync(dPath) || sStat.mtimeMs > fs.statSync(dPath).mtimeMs) {
+              fs.copyFileSync(sPath, dPath);
+              copiedFiles++;
+            } else {
+              skippedFiles++;
+            }
+          } else if (entry.isDirectory() && (entry.name.endsWith('_[ProjectData]') || entry.name === 'VST2 Plugins')) {
+            const sDir = path.join(srcRoot, entry.name);
+            const dDir = path.join(destRoot, entry.name);
+            copyDirectoryRecursive(sDir, dDir);
+            copiedFiles++;
+          }
+        }
+
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ ok: true, srcRoot, destRoot, copiedFiles, skippedFiles }));
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
         res.end(JSON.stringify({ ok: false, error: err.message }));
