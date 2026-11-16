@@ -1,0 +1,13 @@
+{
+  "name": "mpc-one-glass-studio",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MPC One (OS 3.10.1) Glassmorphism Studio: Copilote RAG, Arsenal inMusic, Pont Logic Pro, Atelier Plugin SDK ARM32/ARM64 & Générateur de Templates .xpj",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

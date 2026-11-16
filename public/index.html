@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MPC ONE // GLASS STUDIO 3.10.1 — Arnaud Rigogne</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <!-- Ambient Background Orbs -->
+  <div class="ambient-bg">
+    <div class="orb orb-red"></div>
+    <div class="orb orb-amber"></div>
+    <div class="orb orb-cyan"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div class="studio-shell">
+    <!-- Top Glass Bar (DAW Transport & Status) -->
+    <header class="glass-header">
+      <div class="brand-cluster">
+        <div class="akai-badge">AKAI PRO // MPC ONE</div>
+        <div class="title-block">
+          <h1>MPC BIBLE <span class="accent-gradient">GLASS STUDIO</span></h1>
+          <span class="subtitle">OS 3.10.1 STANDALONE • SERIAL: (21)A12201241842841 • ARNAUD RIGOGNE</span>
+        </div>
+      </div>
+
+      <!-- Simulated Transport & Audio Meter -->
+      <div class="transport-bar glass-pill">
+        <div class="transport-stat">
+          <span class="label">BPM</span>
+          <span class="val mono" id="bpmDisplay">92.0</span>
+        </div>
+        <div class="divider"></div>
+        <div class="transport-stat">
+          <span class="label">SEQ / ARR</span>
+          <span class="val mono">01:LINEAR</span>
+        </div>
+        <div class="divider"></div>
+        <div class="transport-stat">
+          <span class="label">CPU / RAM (2GB)</span>
+          <div class="mini-meter">
+            <div class="meter-fill" style="width: 34%"></div>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <a href="https://notebook.google.com/notebook/3e52a249-f8e4-4f72-bf57-377c8d245a9e" target="_blank" class="sync-badge" title="Ouvrir ton NotebookLM synchronisé">
+          <span class="pulse-dot"></span>
+          RAG NotebookLM : <strong>74 Sources (Sync 3j)</strong>
+        </a>
+      </div>
+    </header>
+
+    <!-- Main Navigation Tabs -->
+    <nav class="glass-nav">
+      <button class="nav-tab active" data-tab="copilot">
+        <span class="tab-icon">🎙️</span>
+        <div>
+          <div class="tab-title">Copilote MPC One & RAG 3.10.1</div>
+          <div class="tab-desc">Agent expert Standalone, Workflow & Q-Links</div>
+        </div>
+      </button>
+      <button class="nav-tab" data-tab="arsenal">
+        <span class="tab-icon">🎛️</span>
+        <div>
+          <div class="tab-title">Arsenal inMusic & Cockpit MPC One</div>
+          <div class="tab-desc">38 Plugins/Expansions, 4 Q-Links, 16 Pads & Boutons</div>
+        </div>
+      </button>
+      <button class="nav-tab" data-tab="bridge">
+        <span class="tab-icon">🍎</span>
+        <div>
+          <div class="tab-title">Pont Logic Pro → MPC Standalone</div>
+          <div class="tab-desc">Diagnostic AU/VST3 Mac, Auto-Sampler & Ports ARM</div>
+        </div>
+      </button>
+      <button class="nav-tab" data-tab="sdk">
+        <span class="tab-icon">⚡</span>
+        <div>
+          <div class="tab-title">Atelier MPC Plugin SDK (OS 3.10.1)</div>
+          <div class="tab-desc">Créateur C++/JUCE, Skin Tactile 7" & Export VST2 ARM</div>
+        </div>
+      </button>
+      <button class="nav-tab" data-tab="templates">
+        <span class="tab-icon">🎛️</span>
+        <div>
+          <div class="tab-title">Templates MPC One (.xpj)</div>
+          <div class="tab-desc">Tous Styles sur mesure (Plugins + Guides Newbie)</div>
+        </div>
+      </button>
+    </nav>
+
+    <!-- Main Workspace Content -->
+    <main class="studio-main">
+      <!-- TAB 1: COPILOTE CONVERSATIONNEL & RAG -->
+      <section class="tab-panel active" id="panel-copilot">
+        <div class="copilot-layout">
+          <!-- Left Column: Chat Interface -->
+          <div class="glass-card chat-container">
+            <div class="card-header">
+              <div>
+                <h2>Agent Conversationnel MPC One (Modèle Original)</h2>
+                <p>Connecté à tes 74 sources NotebookLM + Release Notes MPC OS 3.9 / 3.10 / 3.10.1 + Ton compte inMusic</p>
+              </div>
+              <div class="header-actions">
+                <button class="btn-glass-sm" id="clearChatBtn">Réinitialiser</button>
+              </div>
+            </div>
+
+            <!-- Quick Producer Prompts -->
+            <div class="quick-prompts">
+              <button class="prompt-chip" data-prompt="Comment activer et installer des plugins VST2 externes sur ma MPC One avec la mise à jour 3.10.1 ?">
+                🔥 Activer les VST2 externes (OS 3.10.1)
+              </button>
+              <button class="prompt-chip" data-prompt="Comment réutiliser mes plugins Logic Pro (Alchemy, Serum, Diva...) sur ma MPC One en standalone ?">
+                🍎 Convertir mes plugins Logic Pro → MPC One
+              </button>
+              <button class="prompt-chip" data-prompt="Propose-moi une chaîne de mixage Boom-Bap / Lo-Fi sur ma MPC One en utilisant uniquement mes plugins inMusic (Flavor Pro, Soft Clipper, Pad Thai, Sub Factory).">
+                🥁 Recette Boom-Bap / Lo-Fi avec mes plugins
+              </button>
+              <button class="prompt-chip" data-prompt="Quelles sont les différences matérielles de ma MPC One (classique) par rapport à la One+ pour la mise à jour 3.10.1 (réseau, stockage, souris USB) ?">
+                🔌 Spécificités matérielles de ma MPC One
+              </button>
+              <button class="prompt-chip" data-prompt="Comment fonctionne le nouveau moteur Oscillator Synth Engine (3.9/3.10) et le nouvel Arrange Mode Marquee sur l'écran 7 pouces ?">
+                🎹 Oscillator Engine & Arrange Mode 3.10
+              </button>
+            </div>
+
+            <!-- Messages Stream -->
+            <div class="chat-messages" id="chatMessages">
+              <!-- Initial Welcome Message injected by JS -->
+            </div>
+
+            <!-- Chat Input -->
+            <form class="chat-input-bar" id="chatForm">
+              <input
+                type="text"
+                id="chatInput"
+                placeholder="Pose n'importe quelle question sur ta MPC One, le workflow 3.10.1, le sampling avec ta Numark Scratch, tes Q-Links..."
+                autocomplete="off"
+              />
+              <button type="submit" class="btn-primary">
+                <span>Envoyer</span>
+                <span class="kbd">↵</span>
+              </button>
+            </form>
+          </div>
+
+          <!-- Right Column: Live Hardware Context & RAG Radar -->
+          <div class="copilot-sidebar">
+            <div class="glass-card">
+              <div class="card-header-compact">
+                <span class="badge-live">NOUVEAUTÉ CETTE SEMAINE</span>
+                <h3>Radar MPC OS 3.10 / 3.10.1</h3>
+              </div>
+              <ul class="feature-list">
+                <li>
+                  <span class="feat-tag tag-red">3.10.1</span>
+                  <div>
+                    <strong>MPC Plugin SDK & Dossier <code>VST2 Plugins</code></strong>
+                    <p>Support officiel des plugins Linux ARM64 custom sur carte SD via <em>Preferences &gt; Enhancements</em>.</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="feat-tag tag-amber">3.10.1</span>
+                  <div>
+                    <strong>Souris USB, Screenshots PNG & Remote Screen</strong>
+                    <p>Branche une souris USB directement derrière ta MPC One pour éditer dans l'Arrange Mode au pixel près.</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="feat-tag tag-cyan">3.10.1</span>
+                  <div>
+                    <strong>Débridage Pistes & Instances Plugins</strong>
+                    <p>Option expérimentale pour lever le plafond de 8 plugins instruments (surveille la jauge RAM 2 Go).</p>
+                  </div>
+                </li>
+                <li>
+                  <span class="feat-tag tag-purple">3.10</span>
+                  <div>
+                    <strong>Arrange Mode (Marquee, Track & Arrangement)</strong>
+                    <p>Sélection rectangulaire Marquee et découpe multi-pistes linéaire + sortie de bêta de MPC 3 Desktop.</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            <div class="glass-card">
+              <div class="card-header-compact">
+                <span class="badge-sync">AUTOMATISATION CRON ACTIVE</span>
+                <h3>Veille RAG & NotebookLM (Tous les 3 jours)</h3>
+              </div>
+              <p class="small-muted">
+                Ton agent inspecte automatiquement tous les 3 jours à 09h00 Akai Pro, GitHub <code>open-mpc</code> et YouTube (French The Beatmaker, Ave Mcree, Tubedigga, Malo Beats) et injecte les nouvelles sources dans ton NotebookLM.
+              </p>
+              <div class="rag-stats-grid">
+                <div class="stat-box">
+                  <span class="stat-num">74</span>
+                  <span class="stat-lbl">Sources NotebookLM</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-num">38</span>
+                  <span class="stat-lbl">Licences inMusic</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-num">7</span>
+                  <span class="stat-lbl">Hardwares liés</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: ARSENAL INMUSIC & COCKPIT MPC ONE -->
+      <section class="tab-panel" id="panel-arsenal">
+        <div class="arsenal-layout">
+          <!-- Interactive MPC One Hardware Visual Cockpit -->
+          <div class="glass-card hardware-cockpit">
+            <div class="card-header">
+              <div>
+                <h2>Cockpit Interactif — Ta MPC One (Modèle Classique)</h2>
+                <p>Sélectionne un de tes plugins ou clique sur un bouton physique / banque Q-Link pour visualiser son mapping exact sur ta machine.</p>
+              </div>
+              <div class="qlink-bank-selector">
+                <span>Banque Q-Link active (4 encodeurs) :</span>
+                <button class="qbank-btn active" data-bank="Bank 1">Banque 1 ( Rouge)</button>
+                <button class="qbank-btn" data-bank="Bank 2">Banque 2 (Orange)</button>
+                <button class="qbank-btn" data-bank="Bank 3">Banque 3 (Jaune)</button>
+                <button class="qbank-btn" data-bank="Bank 4">Banque 4 (Vert)</button>
+              </div>
+            </div>
+
+            <div class="mpc-one-unit">
+              <!-- Left Zone: 7-inch Touchscreen + 16 RGB Pads -->
+              <div class="mpc-left-column">
+                <div class="mpc-screen-bezel">
+                  <div class="mpc-screen-header">
+                    <span id="screenPluginType">INSTRUMENT PLUGIN</span>
+                    <span id="screenPluginName">Native Instruments — Analog Dreams</span>
+                    <span class="screen-os-tag">MPC 3.10.1</span>
+                  </div>
+                  <div class="mpc-screen-body" id="mpcScreenDisplay">
+                    <div class="screen-plugin-Inspector">
+                      <div class="screen-wave-viz">
+                        <div class="bar b1"></div><div class="bar b2"></div><div class="bar b3"></div><div class="bar b4"></div>
+                        <div class="bar b5"></div><div class="bar b6"></div><div class="bar b7"></div><div class="bar b8"></div>
+                        <div class="bar b9"></div><div class="bar b10"></div><div class="bar b11"></div><div class="bar b12"></div>
+                      </div>
+                      <div class="screen-info-text" id="screenInfoText">
+                        Utilise les 4 Q-Links à droite pour sculpter ton son en temps réel. Maintiens <strong>SHIFT + Q-LINK</strong> pour ouvrir l'éditeur d'assignation directe.
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mpc-screen-footer">
+                    <span>MAIN MODE (1:1 TRACK)</span>
+                    <span>XL CHANNEL STRIP: SOFT CLIPPER + FLAVOR PRO</span>
+                  </div>
+                </div>
+
+                <!-- 16 RGB Velocity Pads -->
+                <div class="mpc-pads-grid" id="mpcPadsGrid">
+                  <!-- Generated by JS (Pads A13-A16 down to A01-A04) -->
+                </div>
+              </div>
+
+              <!-- Right Zone: Data Dial, 4 Q-Links & Dedicated MPC One Buttons -->
+              <div class="mpc-right-column">
+                <div class="qlinks-panel">
+                  <div class="qlinks-title">4 TOUCH Q-LINKS • <span id="activeQBankLabel">BANQUE 1</span></div>
+                  <div class="qlinks-knobs-stack" id="qlinksStack">
+                    <!-- 4 Knobs populated dynamically -->
+                  </div>
+                </div>
+
+                <div class="hw-buttons-panel">
+                  <div class="qlinks-title">BOUTONS PHYSIQUES DÉDIÉS MPC ONE (CLIQUE POUR LE RACCOURCI 3.10)</div>
+                  <div class="hw-buttons-grid" id="hwButtonsGrid">
+                    <!-- Populated by JS -->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Arsenal Catalog (Instruments, FX, Expansions, Hardware) -->
+          <div class="glass-card arsenal-catalog">
+            <div class="card-header">
+              <div>
+                <h2>Ton Catalogue Synchronisé inMusic (38 Logiciels & Expansions + 7 Hardwares)</h2>
+                <p>Récupéré directement depuis ton compte <code>sirjface@gmail.com</code> — Clique sur un instrument pour charger ses Q-Links dans le cockpit ci-dessus.</p>
+              </div>
+              <div class="catalog-filters">
+                <button class="filter-chip active" data-filter="all">Tout voir (45)</button>
+                <button class="filter-chip" data-filter="instrument">Instruments Standalone (7)</button>
+                <button class="filter-chip" data-filter="fx">Effets & Pro Pack (9)</button>
+                <button class="filter-chip" data-filter="expansion">Expansions & Banques (20)</button>
+                <button class="filter-chip" data-filter="hardware">Ton Hardware (7)</button>
+              </div>
+            </div>
+
+            <div class="catalog-grid" id="catalogGrid">
+              <!-- Populated by JS from /api/arsenal -->
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: PONT LOGIC PRO -> MPC ONE STANDALONE -->
+      <section class="tab-panel" id="panel-bridge">
+        <div class="bridge-layout">
+          <div class="glass-card">
+            <div class="card-header">
+              <div>
+                <h2>Vérité Technique & Solutions : Tes Plugins Logic Pro (Mac) vers ta MPC One Standalone</h2>
+                <p>Comprendre ce que la mise à jour 3.10.1 permet réellement et comment transférer 100% de tes sonorités Logic Pro sur ta MPC One autonome.</p>
+              </div>
+            </div>
+
+            <div class="alert-glass alert-amber">
+              <div class="alert-icon">⚠️</div>
+              <div>
+                <strong>Mise au point essentielle sur le support VST en Standalone (MPC OS 3.10.1) :</strong>
+                <p>
+                  Oui, la mise à jour <strong>MPC OS 3.10.1</strong> ouvre enfin la MPC Standalone aux plugins externes via le dossier <code>VST2 Plugins</code> à la racine de ta carte SD !
+                  <strong>MAIS attention :</strong> sur ton Mac (Logic Pro), tes plugins sont au format <strong>Audio Units (<code>.component</code>)</strong> ou <strong>VST3 macOS</strong> compilés pour Apple Silicon/Intel. La MPC One tourne sous un <strong>OS Linux Temps-Réel (processeur ARM Rockchip)</strong>. Tu ne peux donc pas glisser-déposer un fichier <code>.component</code> ou <code>.vst3</code> Mac directement sur la carte SD.
+                  Voici les <strong>3 passerelles concrètes</strong> selon le plugin Logic Pro que tu veux utiliser :
+                </p>
+              </div>
+            </div>
+
+            <!-- Interactive Plugin Analyzer -->
+            <div class="analyzer-box">
+              <h3>🔍 Quel plugin ou instrument utilises-tu dans Logic Pro ?</h3>
+              <p class="small-muted">Sélectionne un type de plugin ou tape son nom pour obtenir la procédure exacte vers ta MPC One Standalone :</p>
+              <div class="plugin-selector-pills">
+                <button class="logic-pill active" data-plugin="alchemy">Logic Alchemy / Retro Synth / Sampler</button>
+                <button class="logic-pill" data-plugin="serum">Serum / Diva / Omnisphere / Pigments</button>
+                <button class="logic-pill" data-plugin="ni">Native Instruments (Kontakt / Play Series)</button>
+                <button class="logic-pill" data-plugin="dexed">Synthés Open-Source (Dexed DX7, Surge, OB-Xd)</button>
+                <button class="logic-pill" data-plugin="fx">Effets Logic / FabFilter / Valhalla</button>
+              </div>
+
+              <div class="bridge-result-card" id="bridgeResultCard">
+                <!-- Populated by JS -->
+              </div>
+            </div>
+
+            <!-- Auto-Sampler Calculator & Step-by-Step -->
+            <div class="autosampler-calculator glass-subcard">
+              <div class="subcard-header">
+                <h3>🎛️ Configurateur Optimisé d'Auto-Sampling (Logic Pro → Keygroup MPC One 3.10)</h3>
+                <span class="badge-ram">Économiseur de RAM (2 Go MPC One)</span>
+              </div>
+              <div class="calc-grid">
+                <div class="calc-controls">
+                  <label>Type de son à capturer depuis Logic Pro :
+                    <select id="asSoundType">
+                      <option value="bass">Basse / 808 / Sub (C1 - C4)</option>
+                      <option value="keys" selected>Clavier / Rhodes / Pad / Synthé Poly (C2 - C6)</option>
+                      <option value="lead">Lead Synthé / Pluck (C3 - C6)</option>
+                      <option value="choir">Texture / Voix / Nappe évolutive longue (C2 - C5)</option>
+                    </select>
+                  </label>
+                  <label>Pas d'échantillonnage (Note Stride) :
+                    <select id="asStride">
+                      <option value="1">Tous les demi-tons (1) — Ultra précis mais lourd</option>
+                      <option value="3" selected>Tous les 3 demi-tons (Recommandé MPC One)</option>
+                      <option value="5">Tous les 5 demi-tons — Ultra léger en RAM</option>
+                    </select>
+                  </label>
+                  <label>Couches de vélocité (Nouveauté MPC 3 : jusqu'à 8 layers !) :
+                    <select id="asVelocity">
+                      <option value="1">1 couche (Synthé plat / Lead)</option>
+                      <option value="2" selected>2 couches (Soft + Hard — Idéal Pads/Keys)</option>
+                      <option value="4">4 couches (Piano expressif / Rhodes)</option>
+                      <option value="8">8 couches (Maximum MPC 3 — Acoustic Ultra)</option>
+                    </select>
+                  </label>
+                </div>
+                <div class="calc-output" id="asCalcOutput">
+                  <!-- Populated by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 4: ATELIER MPC PLUGIN SDK (OS 3.10.1) -->
+      <section class="tab-panel" id="panel-sdk">
+        <div class="sdk-layout">
+          <div class="glass-card">
+            <div class="card-header">
+              <div>
+                <h2>Atelier de Création & Compilation Directe — Official MPC Plugin SDK (OS 3.10.1)</h2>
+                <p>Conçois ton instrument ou effet maison : notre serveur exécute directement le compilateur officiel d'Akai (<code>tools/build.py</code> + <code>Zig ARM32/ARM64</code> + <code>gen_ui.py</code> + <code>host_sim</code>) et installe le plugin prêt à jouer dans ton dossier <code>VST2 Plugins</code> !</p>
+              </div>
+              <span class="badge-live">COMPILATEUR ARM32/ARM64 INTÉGRÉ</span>
+            </div>
+
+            <div class="sdk-workbench">
+              <!-- Left: Plugin Designer Form & Direct Compiler -->
+              <div class="sdk-form-col">
+                <div class="sdk-prompt-box">
+                  <label for="sdkPromptInput">✨ Décris ton plugin en français (Générateur DSP C++ instantané) :</label>
+                  <div class="sdk-prompt-row">
+                    <input type="text" id="sdkPromptInput" placeholder="Ex: Un piano/violon samplé chaleureux, un dub delay synchro BPM, un filtre analogique résonant, un synthé FM..." />
+                    <button type="button" class="btn-secondary-glass" id="sdkGeneratePromptBtn">✨ Générer DSP</button>
+                  </div>
+                  <div class="sdk-prompt-chips">
+                    <button type="button" class="prompt-chip-mini" data-prompt="Un delay dub stéréo synchronisé au tempo avec feedback chaud">Dub Delay BPM</button>
+                    <button type="button" class="prompt-chip-mini" data-prompt="Un instrument violon / piano à partir de mon sample wav avec filtre et attaque douce">Instrument Sample (.wav)</button>
+                    <button type="button" class="prompt-chip-mini" data-prompt="Un chorus stéréo analogique large façon Juno">Chorus Juno</button>
+                    <button type="button" class="prompt-chip-mini" data-prompt="Un synthé FM métallique pour basses et cloches DX7">Synthé FM</button>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Nom de ton Plugin (max 32 car.)</label>
+                    <input type="text" id="sdkPluginName" value="Arnaud Vinyl Crusher" maxlength="32" />
+                  </div>
+                  <div class="form-group">
+                    <label>Créateur / Marque (Manufacturer)</label>
+                    <input type="text" id="sdkVendorName" value="Arnaud Rigogne" maxlength="32" />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Catégorie MPC 3.10.1</label>
+                    <select id="sdkPluginCategory">
+                      <option value="effect" selected>Effet Insert / Send (Audio FX)</option>
+                      <option value="instrument">Instrument Synthé / Sampler (Plugin Track)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Moteur DSP C++ (`mpc_plugin.h`)</label>
+                    <select id="sdkDspTemplate">
+                      <optgroup label="Effets Audio (Insert / Send)">
+                        <option value="lofi" selected>Saturation Bande + Crunch 12-Bit + Filtre Tone</option>
+                        <option value="dubdelay">Stereo Dub Delay (Synchro BPM + Ping-Pong + SoftClip)</option>
+                        <option value="filter">Filtre Analogique Résonant (SVF + Drive + LFO)</option>
+                        <option value="chorus">Chorus Stéréo Analogique (Modulation L/R + Warmth)</option>
+                        <option value="compressor">Compresseur Bus Punchy (Threshold, Ratio, Makeup, Mix)</option>
+                      </optgroup>
+                      <optgroup label="Instruments (Plugin Track)">
+                        <option value="sampler">🎹 Sampler d'Instrument (.wav intégré : Piano, Violon...)</option>
+                        <option value="subsynth">Synthé Polyphonique Analogique (Saw/Sub + SVF + ADSR)</option>
+                        <option value="fmsynth">Synthé FM 2-Opérateurs (Ratio, Index, Filtre, Release)</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="sdk-sampler-box" id="sdkSamplerBox" style="display: none;">
+                  <div class="sdk-sampler-header">
+                    <strong>🎹 Charger un Sample Audio (<code>.wav</code>) dans ton Instrument</strong>
+                    <span>Embarqué dans <code>Content/Samples/instrument.wav</code></span>
+                  </div>
+                  <div class="form-row" style="margin-top: 8px;">
+                    <div class="form-group">
+                      <label>Fichier Audio (<code>.wav</code> 16/24/32-bit, max 15 Mo) :</label>
+                      <input type="file" id="sdkWavFile" accept=".wav,audio/wav" />
+                    </div>
+                    <div class="form-group">
+                      <label>Note Racine du Sample (Pitch d'origine) :</label>
+                      <select id="sdkRootNote">
+                        <option value="48">C2 (MIDI 48 - Basse)</option>
+                        <option value="60" selected>C3 (MIDI 60 - Piano / Violon standard)</option>
+                        <option value="69">A3 (MIDI 69 - La 440)</option>
+                        <option value="72">C4 (MIDI 72 - Aigu)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div id="sdkWavStatus" class="sdk-wav-status">Aucun .wav sélectionné (repli automatique sur une onde chaude intégrée pour tester).</div>
+                </div>
+
+                <h4>Assignation des 4 Q-Links Physiques (Page Principale)</h4>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Q-Link 1 (Haut) :</label>
+                    <input type="text" id="sdkQ1" value="Drive" maxlength="12" />
+                  </div>
+                  <div class="form-group">
+                    <label>Q-Link 2 :</label>
+                    <input type="text" id="sdkQ2" value="Crush" maxlength="12" />
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Q-Link 3 :</label>
+                    <input type="text" id="sdkQ3" value="Tone" maxlength="12" />
+                  </div>
+                  <div class="form-group">
+                    <label>Q-Link 4 (Bas) :</label>
+                    <input type="text" id="sdkQ4" value="Mix" maxlength="12" />
+                  </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 6px;">
+                  <label>🎯 Destination d'installation automatique du dossier <code>VST2 Plugins</code> :</label>
+                  <select id="sdkTargetDrive">
+                    <option value="workspace">Chargement des disques et cartes SD connectés...</option>
+                  </select>
+                </div>
+
+                <div class="sdk-actions" style="display: flex; flex-direction: column; gap: 10px; margin-top: 8px;">
+                  <button class="btn-primary" id="compileAndDeployBtn" style="justify-content: center; padding: 15px 22px; font-size: 0.95rem;">
+                    🚀 4. Compiler le binaire ARM (.so) + Skin JSON & Copier dans VST2 Plugins/
+                  </button>
+                  <div id="sdkCompileResult" class="sdk-compile-result" style="display: none;"></div>
+                </div>
+
+                <div class="sdk-install-steps">
+                  <h4>Procédure de déploiement sur ta MPC One (3.10.1) :</h4>
+                  <ol>
+                    <li>Sur ta MPC One, va dans <code>Menu &gt; Preferences &gt; Enhancements</code>.</li>
+                    <li>Active <strong>Enable Enhancements and External Plugin Support</strong> puis redémarre.</li>
+                    <li>Sélectionne ta <strong>Carte SD / Disque</strong> dans le menu ci-dessus (le dossier <code>VST2 Plugins</code> est créé automatiquement).</li>
+                    <li><strong>Clique sur le bouton rouge ci-dessus :</strong> l'interface compile les binaires <code>arm32.so</code> (MPC One) + <code>arm64.so</code>, génère les skins tactiles <code>TUI.json</code> + <code>Q-Links.json</code>, teste l'audio via <code>host_sim</code> et copie tout dans <code>VST2 Plugins/</code> !</li>
+                  </ol>
+                </div>
+              </div>
+
+              <!-- Right: 7-Inch Touchscreen Skin Preview, Compiler Console & Generated Code -->
+              <div class="sdk-preview-col">
+                <div class="touchscreen-preview-wrapper">
+                  <div class="preview-label">PRÉVISUALISATION ÉCRAN TACTILE 7" MPC ONE (`Plugin Skins/TUI.json` + `Q-Links.json`)</div>
+                  <div class="mpc-custom-skin" id="sdkSkinPreview">
+                    <div class="skin-top-bar">
+                      <span class="skin-badge" id="previewBadge">CUSTOM EFFECT // ARM32+ARM64</span>
+                      <span class="skin-title" id="previewTitle">Arnaud Rigogne — Arnaud Vinyl Crusher</span>
+                      <span class="skin-cpu">GLIBC 2.27 OK</span>
+                    </div>
+                    <div class="skin-knobs-row">
+                      <div class="skin-knob-card">
+                        <div class="dial-ring"><div class="dial-needle" style="transform: rotate(35deg)"></div></div>
+                        <span class="skin-k-name" id="prevQ1">Drive</span>
+                        <span class="skin-k-val">6.0 dB</span>
+                      </div>
+                      <div class="skin-knob-card">
+                        <div class="dial-ring"><div class="dial-needle" style="transform: rotate(-15deg)"></div></div>
+                        <span class="skin-k-name" id="prevQ2">Crush</span>
+                        <span class="skin-k-val">35 %</span>
+                      </div>
+                      <div class="skin-knob-card">
+                        <div class="dial-ring"><div class="dial-needle" style="transform: rotate(55deg)"></div></div>
+                        <span class="skin-k-name" id="prevQ3">Tone</span>
+                        <span class="skin-k-val">4500 Hz</span>
+                      </div>
+                      <div class="skin-knob-card">
+                        <div class="dial-ring"><div class="dial-needle" style="transform: rotate(10deg)"></div></div>
+                        <span class="skin-k-name" id="prevQ4">Mix</span>
+                        <span class="skin-k-val">80 %</span>
+                      </div>
+                    </div>
+                    <div class="skin-xy-footer">
+                      <span>KIT GRAPHIQUE FILM-STRIP : MPC-RED (90×90 px)</span>
+                      <span>VALIDATION : VSTPluginMain EXPORTED</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Code & Live Build Console Tabs -->
+                <div class="code-viewer">
+                  <div class="code-tabs">
+                    <button class="code-tab active" data-codetab="cpp">src/Plugin.cpp (MPC SDK)</button>
+                    <button class="code-tab" data-codetab="pluginjson">plugin.json</button>
+                    <button class="code-tab" data-codetab="uijson">ui.json (Skin)</button>
+                    <button class="code-tab" data-codetab="log" id="tabBuildLog">🖥 Journal de Compilation (Live)</button>
+                  </div>
+                  <pre class="code-block" id="sdkCodeDisplay"></pre>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 5: GÉNÉRATEUR DE TEMPLATES MPC ONE (.XPJ) -->
+      <section class="tab-panel" id="panel-templates">
+        <div class="glass-card" style="padding: 24px;">
+          <div class="card-header" style="margin-bottom: 18px;">
+            <div>
+              <h2>🎛️ Générateur de Templates MPC One Standalone (Format <code>.xpj</code> OS 3.x)</h2>
+              <p class="subtitle">Choisis un style musical ci-dessous : chaque template pré-configure tes pistes, ton tempo, tes inserts d'effets et tes plugins (<strong>Sub Factory, AIR Flavor Pro, MSXII, NI Play Series, Expansions</strong>) au format natif <code>.xpj</code> + dossier <code>_[ProjectData]</code> prêt pour ta Carte SD.</p>
+            </div>
+            <span class="badge badge-live">FORMAT NATIF MPC OS 3.10.1</span>
+          </div>
+
+          <div class="templates-grid" id="templatesGrid"></div>
+
+          <div class="template-workspace-grid">
+            <div class="template-config-box">
+              <h3>⚙️ Personnaliser & Exporter ce Template</h3>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Nom du Projet (<code>.xpj</code>) :</label>
+                  <input type="text" id="tplProjectName" value="Arnaud_BoomBap_90BPM" />
+                </div>
+                <div class="form-group">
+                  <label>Tempo (BPM) :</label>
+                  <input type="number" id="tplBpm" value="90" min="40" max="240" />
+                </div>
+              </div>
+              <div class="form-row-2">
+                <div class="form-group">
+                  <label>Longueur Séquence (Mesures) :</label>
+                  <select id="tplBars">
+                    <option value="4" selected>4 Mesures (Boucle classique)</option>
+                    <option value="8">8 Mesures</option>
+                    <option value="16">16 Mesures</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>Destination Carte SD / Disque :</label>
+                  <select id="tplTargetDrive"></select>
+                </div>
+              </div>
+
+              <div class="template-actions-row">
+                <button class="btn-primary" id="btnDownloadTemplateZip">⬇️ Télécharger Pack Carte SD (.zip : .xpj + ProjectData + Guide)</button>
+                <button class="btn-secondary-glass" id="btnDownloadTemplateXpj">📄 .xpj seul</button>
+                <button class="btn-secondary-glass" id="btnDeployTemplateDrive">💾 Copier sur Carte SD / Disque</button>
+              </div>
+              <div class="sdk-compile-result" id="tplExportResult" style="display:none; margin-top: 14px;"></div>
+            </div>
+
+            <div class="template-guide-box" id="tplNewbieGuide">
+              <!-- Rempli dynamiquement selon le style sélectionné -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="./app.js" type="module"></script>
+</body>
+</html>

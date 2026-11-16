@@ -1,0 +1,7 @@
+.DS_Store
+node_modules/
+public/builds/
+VST2 Plugins/
+Templates MPC One/
+mpc-plugin-builder-sdk/
+*.log

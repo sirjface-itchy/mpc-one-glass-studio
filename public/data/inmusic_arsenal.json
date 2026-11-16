@@ -1,0 +1,273 @@
+{
+  "user": {
+    "name": "Arnaud Rigogne",
+    "email": "sirjface@gmail.com",
+    "notebooklm_url": "https://notebook.google.com/notebook/3e52a249-f8e4-4f72-bf57-377c8d245a9e",
+    "notebooklm_title": "MPC 3: L'Évolution de la Production Musicale",
+    "notebooklm_sources_count": 74,
+    "last_synced": "2026-11-13T10:05:00+01:00"
+  },
+  "primary_hardware": {
+    "model": "Akai MPC ONE (Original / Classic)",
+    "serial": "(21)A12201241842841",
+    "registered_date": "30/04/2025",
+    "firmware": "MPC OS 3.10.1",
+    "specs": {
+      "screen": "7-inch Full-Color Multi-Touch Display",
+      "pads": "16 Velocity/Pressure-Sensitive RGB Pads (8 Banks)",
+      "qlinks": "4 Touch-Capacitive Q-Link Knobs (4 Banks via Q-Link button = 16 parameters)",
+      "cpu": "Quad-Core ARM Processor (Rockchip RK3288/RK3399 Linux RT)",
+      "ram": "2 GB RAM (4 GB Internal OS Storage - Always save to SD/USB!)",
+      "network": "1x RJ45 Ethernet Port + USB Tethering (No built-in Wi-Fi/Bluetooth unlike MPC One+)",
+      "io_audio": "2x 1/4\" TRS Balanced Inputs, 2x 1/4\" TRS Balanced Outputs, 1x 1/8\" Stereo Headphone Out",
+      "io_midi_cv": "5-Pin MIDI In / MIDI Out, 4x TRS 1/8\" CV/Gate Jacks (8 Outputs total via TRS splitters)",
+      "storage_slots": "Front SD Card Slot (SDHC/SDXC), 1x USB-A 3.0 Host Port (for Flash drives, MIDI controllers, or USB Mouse in 3.10.1), 1x USB-B Port"
+    },
+    "dedicated_buttons": [
+      "MAIN / TRACK",
+      "BROWSE / SAVE",
+      "STEP SEQ / PAD PERFORM",
+      "SAMPLER / LOOPER",
+      "SAMPLE EDIT / Q-LINK EDIT",
+      "PROGRAM EDIT / MIDI CONTROL",
+      "NEXT SEQ / SONG",
+      "PAD MUTE / TRACK MUTE",
+      "XYFX / TUNE",
+      "TC (Timing Correct) / ON-OFF",
+      "UNDO / REDO",
+      "COPY / DELETE",
+      "16 LEVEL / NOTES",
+      "NOTE REPEAT / LATCH",
+      "SHIFT",
+      "MENU / PREFS",
+      "TAP TEMPO / MASTER",
+      "PLUS (-) / (+)"
+    ]
+  },
+  "all_hardware": [
+    {
+      "name": "MPC ONE Standalone Sampler and Sequencer",
+      "brand": "Akai Professional",
+      "serial": "(21)A12201241842841",
+      "role": "Cœur du Studio Standalone (MPC OS 3.10.1)"
+    },
+    {
+      "name": "MPK49 Keyboard Controller",
+      "brand": "Akai Professional",
+      "serial": "(21)K10805023105381",
+      "role": "Clavier maître 49 touches (branchable en MIDI DIN ou USB Host sur MPC One)"
+    },
+    {
+      "name": "MPK Mini MK2 Keyboard Controller",
+      "brand": "Akai Professional",
+      "serial": "A31609221703444",
+      "role": "Clavier nomade 25 touches + joystick pitch/mod"
+    },
+    {
+      "name": "MPD218 Pad Controller",
+      "brand": "Akai Professional",
+      "serial": "(21)E82211169308746",
+      "role": "Extension 16 pads supplémentaires + 6 potentiomètres MIDI"
+    },
+    {
+      "name": "MPC Studio",
+      "brand": "Akai Professional",
+      "serial": "(21)K11409027917444",
+      "role": "Contrôleur dédié MPC 3 Desktop sur Mac"
+    },
+    {
+      "name": "Numark Scratch",
+      "brand": "Numark",
+      "serial": "(21)N31912167106349",
+      "role": "Table de mixage Scratch 2 voies (idéale branchée sur les entrées Line In de la MPC One pour sampler du vinyle et des cuts)"
+    },
+    {
+      "name": "Akai AMX",
+      "brand": "Akai Professional",
+      "serial": "A11412165903939",
+      "role": "Surface de mixage audio compacte"
+    }
+  ],
+  "software_and_plugins": {
+    "standalone_instruments": [
+      {
+        "name": "Analog Dreams (MPC Edition)",
+        "vendor": "Native Instruments",
+        "type": "Instrument Plugin",
+        "style": "Synthwave, Vintage Analog, Retro Pads & Bass",
+        "serial": "NIAD0-J5NYA-SDC1M-MDH2E-WXJMS-E3QM8",
+        "qlink_banks": {
+          "Bank 1 (Main)": ["Blend A/B", "Cutoff", "Resonance", "Noise Level"],
+          "Bank 2 (Envelope)": ["Attack", "Decay", "Sustain", "Release"],
+          "Bank 3 (FX)": ["Modulation", "Drive", "Delay Mix", "Reverb Mix"],
+          "Bank 4 (Perf)": ["Glide", "Detune", "Spread", "Master Out"]
+        }
+      },
+      {
+        "name": "Cloud Supply (MPC Edition)",
+        "vendor": "Native Instruments",
+        "type": "Instrument Plugin",
+        "style": "Trap, Cloud Rap, Atmospheric Keys, Plucks & Bells",
+        "serial": "NICS0-5S9LX-E0XV8-V6NW3-981VJ-KDLE5",
+        "qlink_banks": {
+          "Bank 1 (Main)": ["Sound A/B Blend", "Filter Cutoff", "Filter Res", "Dirt / Lo-Fi"],
+          "Bank 2 (Envelope)": ["Amp Attack", "Amp Decay", "Mod Env", "Release"],
+          "Bank 3 (Space)": ["Chorus", "Delay Time", "Delay Mix", "Reverb Size"],
+          "Bank 4 (Seq/Pitch)": ["Flutter", "Pitch Drift", "Stereo Width", "Output"]
+        }
+      },
+      {
+        "name": "Duets (MPC Edition)",
+        "vendor": "Native Instruments",
+        "type": "Instrument Plugin",
+        "style": "R&B, Pop, Hybrid Vocal Leads & Layered Keys",
+        "serial": "NIDEU-CYGS4-L60VG-NE0JC-GJN5U-C5TFY",
+        "qlink_banks": {
+          "Bank 1 (Main)": ["Layer Balance", "Formant / Cutoff", "Resonance", "Air / Breath"],
+          "Bank 2 (Dynamics)": ["Attack", "Decay", "Sustain", "Release"],
+          "Bank 3 (FX)": ["Dimension", "Saturation", "Echo", "Space"],
+          "Bank 4 (Expressive)": ["Vibrato", "Glide", "Harmony", "Level"]
+        }
+      },
+      {
+        "name": "Ignition Keys (MPC Edition)",
+        "vendor": "Native Instruments",
+        "type": "Instrument Plugin",
+        "style": "Modern Pop, Synth Keys, Lush Chords & Leads",
+        "serial": "NIIKS-UGY9M-3PGM5-JW9VR-WAF4A-X9HDT",
+        "qlink_banks": {
+          "Bank 1 (Main)": ["Layer Mix", "Brightness", "Tone", "Warmth"],
+          "Bank 2 (Env)": ["Attack", "Decay", "Release", "Velocity Sens"],
+          "Bank 3 (FX)": ["Phaser/Flanger", "Delay", "Reverb", "Compression"],
+          "Bank 4 (Mod)": ["Pitch LFO", "Filter LFO", "Pan Spread", "Output"]
+        }
+      },
+      {
+        "name": "Global Shake (MPC Edition)",
+        "vendor": "Native Instruments",
+        "type": "Instrument Plugin",
+        "style": "Afrobeats, World Melodics, Kalimbas, Marimbas & Percs",
+        "serial": "NIGSH-5S9LX-E0RWT-A2CR4-MHP8F-CF4YJ",
+        "qlink_banks": {
+          "Bank 1 (Main)": ["Blend A/B", "Cutoff", "Attack Click", "Body"],
+          "Bank 2 (Env)": ["Attack", "Decay", "Sustain", "Release"],
+          "Bank 3 (FX)": ["Tape Sat", "Delay", "Room Reverb", "EQ High"],
+          "Bank 4 (Groove)": ["Humanize", "Swing", "Tuning", "Output"]
+        }
+      },
+      {
+        "name": "AIR Sub Factory",
+        "vendor": "AIR Music Tech",
+        "type": "Instrument Plugin",
+        "style": "808 Bass, Sub Bass, Glide Bass, Distorted Hip-Hop/Trap Bass",
+        "serial": "ARSF1-5S9LX-E0C42-5VRVU-WUWMK-Q8TV0",
+        "qlink_banks": {
+          "Bank 1 (Osc & Sub)": ["Wavetable 1 Pos", "Wavetable 2 Pos", "Sub Level", "Sample Punch"],
+          "Bank 2 (Filter & Drive)": ["Filter Cutoff", "Resonance", "Drive Type", "Drive Amount"],
+          "Bank 3 (Pitch & Glide)": ["Pitch Env Amt", "Pitch Decay", "Glide Time", "Width"],
+          "Bank 4 (Dynamics)": ["Compressor", "Low Cut", "High Cut", "Master Level"]
+        }
+      },
+      {
+        "name": "MPC 3 Oscillator Synth Engine (OS 3.9+)",
+        "vendor": "Akai Professional",
+        "type": "Built-in Engine (Drum/Keygroup)",
+        "style": "Native Wavetable & Virtual Analog per Pad/Keygroup",
+        "serial": "Inclus dans MPC OS 3.9 / 3.10.1",
+        "qlink_banks": {
+          "Bank 1 (Osc)": ["Wave Shape", "Detune / Unison", "Sub Osc", "Noise"],
+          "Bank 2 (Filter)": ["Filter Type", "Cutoff", "Resonance", "Env Depth"],
+          "Bank 3 (Amp/Mod)": ["Attack", "Decay", "Sustain", "Release"],
+          "Bank 4 (LFO)": ["LFO Rate", "LFO Depth", "LFO Sync", "Pan"]
+        }
+      }
+    ],
+    "standalone_effects_and_packs": [
+      {
+        "name": "MPC Pro Pack",
+        "vendor": "Akai Professional / AIR",
+        "type": "Feature & FX Bundle",
+        "includes": ["AIR Reverb Pro", "AIR Visual EQ4", "AIR Utility", "Super Warp Algorithm", "Envelope Follower", "CV Launch"],
+        "serial": "AKMPF-E1JU6-N8579-8U18H-RY5LJ-K3HGP"
+      },
+      {
+        "name": "AIR Flavor Pro",
+        "vendor": "AIR Music Tech",
+        "type": "FX Plugin",
+        "style": "Lo-Fi Multi-FX: Vinyl, Tape, Tubes, Radio, Bitcrush, Pitch Flutter",
+        "serial": "ARFL2-UGY9M-35NX5-WK4N5-1NM5D-8WN8N"
+      },
+      {
+        "name": "AIR Ether",
+        "vendor": "AIR Music Tech",
+        "type": "FX Plugin",
+        "style": "Granular & Shimmer Reverb, Pitch-Shifted Ambient Space",
+        "serial": "ARET1-N9S3F-WX3HW-56U1N-R3YJ7-WAVHX"
+      },
+      {
+        "name": "AIR Sprite",
+        "vendor": "AIR Music Tech",
+        "type": "FX Plugin",
+        "style": "Multi-Modulation FX: Pitch Shifter, Delay, Reverb, Chorus, Distortion",
+        "serial": "ARSP2-7UCN0-GHEUD-YVSP6-M8QH7-1U4NQ"
+      },
+      {
+        "name": "AIR Soft Clipper",
+        "vendor": "AIR Music Tech",
+        "type": "FX Plugin",
+        "style": "Drum Bus & Master Saturation / Loudness Clipper",
+        "serial": "ARSC1-SEW7K-1MTLV-WVLJG-MG035-UVHA9"
+      },
+      {
+        "name": "AIR Tape Double Track",
+        "vendor": "AIR Music Tech",
+        "type": "FX Plugin",
+        "style": "Analog Tape ADT Stereo Doubler",
+        "serial": "ARADT-G3LW8-QCYPQ-E7AX5-KG5CN-0545Y"
+      },
+      {
+        "name": "Akai Flex Beat",
+        "vendor": "Akai Professional",
+        "type": "Performance FX Plugin",
+        "style": "Real-time Time/Pitch Manipulation, Stutters, Turntable Stops, Half-Speed",
+        "serial": "AKFB0-5S9LX-EG6KF-GHQWA-D6NPT-9MGL2"
+      },
+      {
+        "name": "MSXII Fly Tape II",
+        "vendor": "MSXII Sound Design",
+        "type": "FX Plugin",
+        "style": "SP-404 / Cassette Style Warble, Speed, Mute, Brake & Lo-Fi",
+        "serial": "XSFT2-F2KV7-P97DK-D1XMV-XTYSX-SJRG4"
+      },
+      {
+        "name": "MSXII Lo-Fly Dirt",
+        "vendor": "MSXII Sound Design",
+        "type": "FX Plugin",
+        "style": "12-Bit Vintage Sampler Crunch, Saturation & Filter",
+        "serial": "XSLFD-K6P0C-TEETT-SK8VC-0EQ58-UY2DR"
+      }
+    ],
+    "expansions": [
+      { "name": "Marco Polo Presents - Pad Thai Vol. 1", "genre": "Boom-Bap / East Coast Hip-Hop", "vibe": "Drums punchy, breaks poussiéreux, basses lourdes", "code": "MP091" },
+      { "name": "Marco Polo Presents - Pad Thai Vol. 3 Deluxe", "genre": "Boom-Bap / Underground Hip-Hop", "vibe": "Kicks claquants, snares vinyle, loops cinématiques", "code": "MP093" },
+      { "name": "Premier Beats", "genre": "90s Boom-Bap / NY Golden Era", "vibe": "Chops façon DJ Premier, kits authentiques, boom-bap brut", "code": "MP032" },
+      { "name": "DECAP - Drums That Knock", "genre": "Modern Hip-Hop / Future Beats / Trap", "vibe": "Transitoires ultra-précises, 808s massives, snares modernes", "code": "MP034" },
+      { "name": "Scott Storch Presents", "genre": "West Coast / Hip-Hop / R&B", "vibe": "Claviers, cordes orientales, basses West Coast et drums club", "code": "MP131" },
+      { "name": "West Coast Funk", "genre": "G-Funk / West Coast", "vibe": "Synthés sifflants (whine), talkbox, funk basslines", "code": "MP132" },
+      { "name": "Soul Provider 3", "genre": "Soulful Hip-Hop / Crate Digging", "vibe": "Échantillons soul 70s, cuivres chauds, Rhodes et breaks", "code": "MP044" },
+      { "name": "LoFi Jazz", "genre": "Lo-Fi Hip-Hop / JazzHop", "vibe": "Accords de piano feutrés, contrebasse, trompette jazz, crackle", "code": "MP078" },
+      { "name": "Dojo Dust Instruments Vol. 1", "genre": "Lo-Fi / Dusty Keygroups", "vibe": "Instruments multi-samplés passés dans du hardware vintage", "code": "MP040" },
+      { "name": "Boom Back MPC Expansion", "genre": "Classic Hip-Hop", "vibe": "Kits classiques MPC 2000XL / 3000", "code": "EXP-BB" },
+      { "name": "Tape Series & Tape Series Vol. 1", "genre": "Analog Tape Hip-Hop / Lo-Fi", "vibe": "Sons enregistrés sur bande 1/4 pouce, chaleur analogique", "code": "MP097" },
+      { "name": "Gold Dust", "genre": "Crate Digging / Hip-Hop", "vibe": "Loops mélodiques rares et kits texturés", "code": "MP049" },
+      { "name": "Urban Roulette", "genre": "Trap / Urban", "vibe": "Mélodies sombres, hi-hats rapides, basses 808", "code": "MP001" },
+      { "name": "Urban Echo", "genre": "Ambient Trap / R&B", "vibe": "Textures vocales, nappes planantes, percussions urbaines", "code": "MP030" },
+      { "name": "F9 Instruments Collection", "genre": "Multi-Genre Keygroups (Funk, House, Hip-Hop)", "vibe": "Collection géante de basses, synthés analogiques et pianos multi-samplés", "code": "MP035" },
+      { "name": "Dark Parallax", "genre": "Dark Electronic / Cinematic / Cyberpunk", "vibe": "Synthés dystopiques, basses modulaires, textures industrielles", "code": "MP008" },
+      { "name": "LABYRINTH", "genre": "Cinematic / Melodic Techno", "vibe": "Arpèges hypnotiques, séquences profondes", "code": "MP090" },
+      { "name": "Neo Sunset", "genre": "Synthwave / Outrun / 80s", "vibe": "Drums gated reverb, basses Juno/Prophet, leads néon", "code": "MP068" },
+      { "name": "Glitterball", "genre": "Nu-Disco / French Touch / Funk House", "vibe": "Basses slap, cocottes de guitare, cordes disco", "code": "MP069" },
+      { "name": "Cr2 Techno", "genre": "Peak-Time & Underground Techno", "vibe": "Kicks grondants, séquences acides, percussions métalliques", "code": "MP137" }
+    ]
+  }
+}
