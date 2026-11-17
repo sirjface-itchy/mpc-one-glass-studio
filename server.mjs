@@ -173,6 +173,15 @@ const server = http.createServer(async (req, res) => {
           fs.mkdirSync(assetsDir, { recursive: true });
           fs.writeFileSync(path.join(assetsDir, imgName), imgBuf);
           wavStatusMsg += `\nVisuel PNG Film-Strip intégré : assets/${imgName} (${(imgBuf.length / 1024).toFixed(1)} KB)`;
+        } else if (payload.presetKnobImage && typeof payload.presetKnobImage === 'string') {
+          const safeImg = path.basename(payload.presetKnobImage).replace(/[^a-zA-Z0-9._-]/g, '_');
+          const srcImg = path.join(PUBLIC_DIR, 'assets', 'filmstrips', safeImg);
+          if (fs.existsSync(srcImg)) {
+            const assetsDir = path.join(pluginDir, 'assets');
+            fs.mkdirSync(assetsDir, { recursive: true });
+            fs.copyFileSync(srcImg, path.join(assetsDir, safeImg));
+            wavStatusMsg += `\nModèle PNG Film-Strip Studio intégré : assets/${safeImg}`;
+          }
         }
 
         let fullLog = `=== [ÉTAPE 1] CRÉATION DU PROJET SDK OFFICIEL ===\nDossier : ${pluginDir}\nFichiers écrits : plugin.json, ui.json, src/${className}.cpp${wavStatusMsg}\n\n`;

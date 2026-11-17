@@ -8,6 +8,17 @@ let customCppOverride = null;
 let uploadedWavZones = { low: null, high: null };
 let uploadedKnobImageBase64 = null;
 let uploadedKnobImageName = null;
+let selectedFilmstripPreset = '';
+
+const FILMSTRIP_PRESETS = [
+  { id: '', label: 'Défaut SDK', sub: 'Thème Auto', file: '' },
+  { id: 'ssl_console', label: 'SSL Console', sub: 'SSQ / 4000 EQ', file: 'ssl_console.png' },
+  { id: 'neve_1073', label: 'Neve 1073', sub: 'VPRE-72 Classic', file: 'neve_1073.png' },
+  { id: 'fabfilter_glow', label: 'FabFilter Glow', sub: 'Pro-Q / Nova', file: 'fabfilter_glow.png' },
+  { id: 'valhalla_space', label: 'Valhalla Space', sub: 'Supermassive', file: 'valhalla_space.png' },
+  { id: 'la2a_vintage', label: 'LA-2A Tube', sub: 'Pultec / Opto', file: 'la2a_vintage.png' },
+  { id: 'moog_analog', label: 'Moog Analog', sub: 'Synth / Juno', file: 'moog_analog.png' }
+];
 let qLinks16 = [
   'Drive', 'Crush', 'Tone', 'Mix',
   'Low Cut', 'High Cut', 'Tape Sat', 'Stereo',
@@ -661,6 +672,32 @@ async function initSdkTab() {
     }
   }
 
+  function renderFilmstripGallery() {
+    const gal = document.getElementById('sdkFilmstripGallery');
+    if (!gal) return;
+    gal.innerHTML = FILMSTRIP_PRESETS.map(p => `
+      <div class="filmstrip-card ${selectedFilmstripPreset === p.file ? 'active' : ''}" data-fs="${p.file}">
+        ${p.file ? `<img src="./assets/filmstrips/previews/${p.file}" alt="${p.label}" />` : `<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;">🎛️</div>`}
+        <strong>${p.label}</strong>
+        <span>${p.sub}</span>
+      </div>
+    `).join('');
+    gal.querySelectorAll('.filmstrip-card').forEach(card => {
+      card.addEventListener('click', () => {
+        selectedFilmstripPreset = card.dataset.fs || '';
+        if (selectedFilmstripPreset) {
+          uploadedKnobImageBase64 = null;
+          uploadedKnobImageName = null;
+          const st = document.getElementById('sdkKnobImageStatus');
+          if (st) st.textContent = `✅ Modèle Studio sélectionné : assets/${selectedFilmstripPreset} (127 frames, 90×90 px)`;
+        }
+        renderFilmstripGallery();
+        updateSdkPreview();
+      });
+    });
+  }
+  renderFilmstripGallery();
+
   document.getElementById('sdkKnobImageFile')?.addEventListener('change', (e) => {
     const file = e.target.files?.[0];
     const st = document.getElementById('sdkKnobImageStatus');
@@ -959,6 +996,8 @@ function buildSdkBundle() {
     return { param: paramName, widget };
   });
 
+  const effectiveKnobImage = uploadedKnobImageName || selectedFilmstripPreset || null;
+
   const uiJsonObj = {
     kit: { theme: uiTheme, accent: `ff${accHex}` },
     style: {
@@ -967,7 +1006,7 @@ function buildSdkBundle() {
       text: 'ffffffff',
       muted: 'ff94a3b8'
     },
-    ...(uploadedKnobImageName ? { knobImage: uploadedKnobImageName, knobFrames: 127 } : {}),
+    ...(effectiveKnobImage ? { knobImage: effectiveKnobImage, knobFrames: 127 } : {}),
     pages: [
       {
         name: 'MAIN',
@@ -1003,6 +1042,7 @@ function buildSdkBundle() {
     wavZonesBase64: dsp === 'sampler' ? uploadedWavZones : null,
     knobImageBase64: uploadedKnobImageBase64,
     knobImageName: uploadedKnobImageName,
+    presetKnobImage: uploadedKnobImageName ? null : (selectedFilmstripPreset || null),
     cppCode,
     pluginJson: JSON.stringify(pluginJsonObj, null, 2),
     uiJson: JSON.stringify(uiJsonObj, null, 2)
@@ -1676,9 +1716,12 @@ function updateSdkPreview() {
     knobsGrid.className = bundle.qMode === '16' ? 'skin-knobs-row grid-4x4' : 'skin-knobs-row';
     knobsGrid.innerHTML = bundle.activeQNames.map((name, idx) => {
       const deg = ((idx * 37) % 140) - 70;
+      const knobGraphic = bundle.presetKnobImage
+        ? `<img src="./assets/filmstrips/previews/${bundle.presetKnobImage}" style="width:${bundle.qMode === '16' ? 38 : 54}px;height:${bundle.qMode === '16' ? 38 : 54}px;object-fit:contain;" />`
+        : `<div class="dial-ring" style="border-color:#${bundle.accHex};"><div class="dial-needle" style="transform: rotate(${deg}deg); background:#${bundle.accHex};"></div></div>`;
       return `
         <div class="skin-knob-card">
-          <div class="dial-ring" style="border-color:#${bundle.accHex};"><div class="dial-needle" style="transform: rotate(${deg}deg); background:#${bundle.accHex};"></div></div>
+          ${knobGraphic}
           <span class="skin-k-name">${escapeHtml(name)}</span>
           <span class="skin-k-val">Q${idx + 1}</span>
         </div>

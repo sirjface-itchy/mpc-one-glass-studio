@@ -1731,3 +1731,51 @@ body {
   width: 34px;
   height: 34px;
 }
+
+.filmstrip-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.filmstrip-card {
+  background: rgba(11, 14, 22, 0.78);
+  border: 1px solid var(--border-glass);
+  border-radius: 10px;
+  padding: 8px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.16s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.filmstrip-card:hover {
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+
+.filmstrip-card.active {
+  border-color: var(--akai-red);
+  background: rgba(230, 25, 56, 0.14);
+  box-shadow: 0 0 12px rgba(230, 25, 56, 0.25);
+}
+
+.filmstrip-card img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+}
+
+.filmstrip-card strong {
+  font-size: 0.7rem;
+  color: #f8fafc;
+}
+
+.filmstrip-card span {
+  font-size: 0.62rem;
+  color: var(--text-muted);
+}
