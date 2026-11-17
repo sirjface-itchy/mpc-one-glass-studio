@@ -165,6 +165,16 @@ const server = http.createServer(async (req, res) => {
           }
         }
 
+        if (payload.knobImageBase64 && typeof payload.knobImageBase64 === 'string') {
+          const cleanB64 = payload.knobImageBase64.replace(/^data:[^;]+;base64,/, '');
+          const imgBuf = Buffer.from(cleanB64, 'base64');
+          const imgName = (payload.knobImageName || 'custom_knob.png').replace(/[^a-zA-Z0-9._-]/g, '_');
+          const assetsDir = path.join(pluginDir, 'assets');
+          fs.mkdirSync(assetsDir, { recursive: true });
+          fs.writeFileSync(path.join(assetsDir, imgName), imgBuf);
+          wavStatusMsg += `\nVisuel PNG Film-Strip intégré : assets/${imgName} (${(imgBuf.length / 1024).toFixed(1)} KB)`;
+        }
+
         let fullLog = `=== [ÉTAPE 1] CRÉATION DU PROJET SDK OFFICIEL ===\nDossier : ${pluginDir}\nFichiers écrits : plugin.json, ui.json, src/${className}.cpp${wavStatusMsg}\n\n`;
 
         // 2. Run python3 tools/build.py (compiles Native + ARM32 for MPC One + ARM64 + Skins TUI.json + Q-Links.json + Validate)

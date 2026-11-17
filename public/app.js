@@ -6,6 +6,14 @@ let selectedQBankIndex = 0;
 let activeCodeTab = 'cpp';
 let customCppOverride = null;
 let uploadedWavZones = { low: null, high: null };
+let uploadedKnobImageBase64 = null;
+let uploadedKnobImageName = null;
+let qLinks16 = [
+  'Drive', 'Crush', 'Tone', 'Mix',
+  'Low Cut', 'High Cut', 'Tape Sat', 'Stereo',
+  'LFO Rate', 'LFO Amt', 'Attack', 'Release',
+  'Sub Gain', 'Warmth', 'Clipper', 'Master'
+];
 
 const HW_SHORTCUTS = [
   { btn: "MAIN / TRACK", info: "En MPC 3.10 : Appui simple = Main Mode (Pistes unifiées 1:1 + XL Channel Strip). Double appui ou maintien = Arrange Mode linéaire avec le nouvel outil Marquee !" },
@@ -587,18 +595,90 @@ function toggleSamplerBox() {
 }
 
 async function initSdkTab() {
-  const inputs = ['sdkPluginName', 'sdkVendorName', 'sdkPluginCategory', 'sdkDspTemplate', 'sdkQ1', 'sdkQ2', 'sdkQ3', 'sdkQ4', 'sdkRootNote'];
+  const inputs = ['sdkPluginName', 'sdkVendorName', 'sdkPluginCategory', 'sdkDspTemplate', 'sdkQ1', 'sdkQ2', 'sdkQ3', 'sdkQ4', 'sdkRootNote', 'sdkQLinkMode', 'sdkUiTheme', 'sdkBgColor', 'sdkAccentColor', 'sdkWidgetStyle'];
   inputs.forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
-    el.addEventListener('input', () => {
+    const onChange = () => {
+      customCppOverride = null;
       if (id === 'sdkDspTemplate') toggleSamplerBox();
+      if (id === 'sdkQLinkMode') renderQLinkModeUI();
+      if (id === 'sdkUiTheme') {
+        const themeColors = {
+          'mpc-red': '#d31145', amber: '#ffa21a', cyan: '#19c6e0',
+          lime: '#8fd21f', violet: '#9b63ff', mono: '#e4e4e6'
+        };
+        const acc = document.getElementById('sdkAccentColor');
+        if (acc && themeColors[el.value]) acc.value = themeColors[el.value];
+      }
+      if (['sdkQ1', 'sdkQ2', 'sdkQ3', 'sdkQ4'].includes(id)) {
+        const idx = Number(id.replace('sdkQ', '')) - 1;
+        qLinks16[idx] = el.value;
+      }
       updateSdkPreview();
-    });
-    el.addEventListener('change', () => {
-      if (id === 'sdkDspTemplate') toggleSamplerBox();
+    };
+    el.addEventListener('input', onChange);
+    el.addEventListener('change', onChange);
+  });
+
+  function renderQLinkModeUI() {
+    const mode = document.getElementById('sdkQLinkMode')?.value || '4';
+    const simpleEl = document.getElementById('sdkSimpleQLinks');
+    const gridEl = document.getElementById('sdkGrid4x4');
+    const titleEl = document.getElementById('sdkQLinksTitle');
+    if (mode === '16') {
+      if (simpleEl) simpleEl.style.display = 'none';
+      if (gridEl) {
+        gridEl.style.display = 'grid';
+        for (let i = 0; i < 4; i++) {
+          const v = document.getElementById(`sdkQ${i + 1}`)?.value;
+          if (v) qLinks16[i] = v;
+        }
+        gridEl.innerHTML = qLinks16.map((label, idx) => `
+          <div class="sdk-qlink-cell">
+            <span>Q${idx + 1} (B${Math.floor(idx / 4) + 1})</span>
+            <input type="text" class="qlink16-inp" data-qidx="${idx}" value="${escapeHtml(label)}" maxlength="12" />
+          </div>
+        `).join('');
+        gridEl.querySelectorAll('.qlink16-inp').forEach(inp => {
+          inp.addEventListener('input', () => {
+            const idx = Number(inp.dataset.qidx);
+            qLinks16[idx] = inp.value;
+            if (idx < 4) {
+              const sEl = document.getElementById(`sdkQ${idx + 1}`);
+              if (sEl) sEl.value = inp.value;
+            }
+            customCppOverride = null;
+            updateSdkPreview();
+          });
+        });
+      }
+      if (titleEl) titleEl.textContent = 'Assignation Complète 4×4 (16 Q-Links sur 4 Banques)';
+    } else {
+      if (simpleEl) simpleEl.style.display = 'grid';
+      if (gridEl) gridEl.style.display = 'none';
+      if (titleEl) titleEl.textContent = 'Assignation des 4 Q-Links Physiques (Mode Simple)';
+    }
+  }
+
+  document.getElementById('sdkKnobImageFile')?.addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    const st = document.getElementById('sdkKnobImageStatus');
+    if (!file) {
+      uploadedKnobImageBase64 = null;
+      uploadedKnobImageName = null;
+      if (st) st.textContent = 'Par défaut : film-strip HD généré automatiquement selon ton thème.';
       updateSdkPreview();
-    });
+      return;
+    }
+    const r = new FileReader();
+    r.onload = () => {
+      uploadedKnobImageBase64 = r.result;
+      uploadedKnobImageName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      if (st) st.textContent = `✅ PNG personnalisé prêt : assets/${uploadedKnobImageName} (${(file.size / 1024).toFixed(1)} KB)`;
+      updateSdkPreview();
+    };
+    r.readAsDataURL(file);
   });
 
   document.getElementById('sdkGeneratePromptBtn')?.addEventListener('click', () => {
@@ -863,23 +943,48 @@ function buildSdkBundle() {
     license: "MIT"
   };
 
+  const qMode = document.getElementById('sdkQLinkMode')?.value || '4';
+  const uiTheme = document.getElementById('sdkUiTheme')?.value || 'mpc-red';
+  const bgHex = (document.getElementById('sdkBgColor')?.value || '#1e1d1e').replace('#', '').toLowerCase();
+  const accHex = (document.getElementById('sdkAccentColor')?.value || '#d31145').replace('#', '').toLowerCase();
+  const wStyle = document.getElementById('sdkWidgetStyle')?.value || 'mixed';
+
+  const activeQNames = qMode === '16'
+    ? qLinks16.map((lbl, idx) => (lbl || `Param ${idx + 1}`).trim().slice(0, 12))
+    : [q1, q2, q3, q4];
+
+  const controls = activeQNames.map((paramName, idx) => {
+    let widget = wStyle;
+    if (wStyle === 'mixed') widget = (idx % 4 === 3) ? 'fader' : 'knob';
+    return { param: paramName, widget };
+  });
+
   const uiJsonObj = {
-    kit: "mpc-red",
+    kit: { theme: uiTheme, accent: `ff${accHex}` },
+    style: {
+      background: `ff${bgHex}`,
+      accent: `ff${accHex}`,
+      text: 'ffffffff',
+      muted: 'ff94a3b8'
+    },
+    ...(uploadedKnobImageName ? { knobImage: uploadedKnobImageName, knobFrames: 127 } : {}),
     pages: [
       {
-        name: "MAIN",
-        controls: [
-          { param: q1, widget: "knob" },
-          { param: q2, widget: "knob" },
-          { param: q3, widget: "knob" },
-          { param: q4, widget: "fader" }
-        ]
+        name: 'MAIN',
+        controls
       }
     ]
   };
 
   const rootNote = Number(document.getElementById('sdkRootNote')?.value || 60);
-  const cppCode = customCppOverride || generateSdkCppCode({ folderName, vendor, className, uid, isInstrument, dsp, q1, q2, q3, q4, rootNote });
+  let generatedCpp = generateSdkCppCode({ folderName, vendor, className, uid, isInstrument, dsp, q1, q2, q3, q4, rootNote });
+  if (qMode === '16') {
+    const extraParams = activeQNames.slice(4).map((name, idx) =>
+      `        addParam(mpc::floatParam("p${idx + 5}", "${name}", 0.0f, 100.0f, 50.0f, "%", 0));`
+    ).join('\n');
+    generatedCpp = generatedCpp.replace('        addProgram(', `${extraParams}\n        addProgram(`);
+  }
+  const cppCode = customCppOverride || generatedCpp;
 
   return {
     folderName,
@@ -889,8 +994,15 @@ function buildSdkBundle() {
     uid,
     kind,
     targetDriveId,
+    qMode,
+    uiTheme,
+    bgHex,
+    accHex,
+    activeQNames,
     wavBase64: dsp === 'sampler' ? uploadedWavBase64 : null,
     wavZonesBase64: dsp === 'sampler' ? uploadedWavZones : null,
+    knobImageBase64: uploadedKnobImageBase64,
+    knobImageName: uploadedKnobImageName,
     cppCode,
     pluginJson: JSON.stringify(pluginJsonObj, null, 2),
     uiJson: JSON.stringify(uiJsonObj, null, 2)
@@ -1547,11 +1659,32 @@ MPC_PLUGIN_ENTRY(${className})
 function updateSdkPreview() {
   const bundle = buildSdkBundle();
   document.getElementById('previewTitle').textContent = `${bundle.vendor} — ${bundle.folderName}`;
-  document.getElementById('previewBadge').textContent = `CUSTOM ${bundle.kind.toUpperCase()} // ARM32+ARM64`;
-  document.getElementById('prevQ1').textContent = document.getElementById('sdkQ1').value;
-  document.getElementById('prevQ2').textContent = document.getElementById('sdkQ2').value;
-  document.getElementById('prevQ3').textContent = document.getElementById('sdkQ3').value;
-  document.getElementById('prevQ4').textContent = document.getElementById('sdkQ4').value;
+  document.getElementById('previewBadge').textContent = `CUSTOM ${bundle.kind.toUpperCase()} // ${bundle.qMode === '16' ? '4x4 (16 Q-LINKS)' : '4 Q-LINKS'}`;
+
+  const skinEl = document.getElementById('sdkSkinPreview');
+  if (skinEl) {
+    skinEl.style.background = `#${bundle.bgHex}`;
+    skinEl.style.borderColor = `#${bundle.accHex}`;
+  }
+  const footerEl = document.getElementById('previewKitFooter');
+  if (footerEl) {
+    footerEl.textContent = `THÈME : ${bundle.uiTheme.toUpperCase()} (#${bundle.accHex}) • ${bundle.qMode === '16' ? '16 Q-LINKS (4×4)' : '4 Q-LINKS'}`;
+  }
+
+  const knobsGrid = document.getElementById('sdkPreviewKnobsGrid');
+  if (knobsGrid) {
+    knobsGrid.className = bundle.qMode === '16' ? 'skin-knobs-row grid-4x4' : 'skin-knobs-row';
+    knobsGrid.innerHTML = bundle.activeQNames.map((name, idx) => {
+      const deg = ((idx * 37) % 140) - 70;
+      return `
+        <div class="skin-knob-card">
+          <div class="dial-ring" style="border-color:#${bundle.accHex};"><div class="dial-needle" style="transform: rotate(${deg}deg); background:#${bundle.accHex};"></div></div>
+          <span class="skin-k-name">${escapeHtml(name)}</span>
+          <span class="skin-k-val">Q${idx + 1}</span>
+        </div>
+      `;
+    }).join('');
+  }
 
   const codeEl = document.getElementById('sdkCodeDisplay');
   if (activeCodeTab === 'cpp') codeEl.textContent = bundle.cppCode;

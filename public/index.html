@@ -506,8 +506,56 @@
                   <div id="sdkWavStatus" class="sdk-wav-status">Aucun .wav sélectionné (repli automatique sur une onde chaude intégrée pour tester).</div>
                 </div>
 
-                <h4>Assignation des 4 Q-Links Physiques (Page Principale)</h4>
-                <div class="form-row">
+                <div class="sdk-visual-designer">
+                  <h4>🎨 Visuels Tactiles 7" (<code>ui.json</code>) &amp; Mode Q-Links</h4>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Complexité / Grille Q-Links :</label>
+                      <select id="sdkQLinkMode">
+                        <option value="4" selected>🎛️ Simple — 4 Q-Links (1 Banque)</option>
+                        <option value="16">🚀 Pro 4×4 — 16 Q-Links (4 Banques complètes MPC One)</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Thème Graphique Kit (Film-Strip) :</label>
+                      <select id="sdkUiTheme">
+                        <option value="mpc-red" selected>🔴 MPC Red (Classique Akai)</option>
+                        <option value="amber">🟠 Amber Vintage (Tube / SP-1200)</option>
+                        <option value="cyan">🔵 Cyan Néon (Synthé / Spatial)</option>
+                        <option value="lime">🟢 Lime Acid (Techno / Bass)</option>
+                        <option value="violet">🟣 Violet Outrun (Synthwave)</option>
+                        <option value="mono">⚪ Mono Studio (Épuré)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Couleur Fond Écran 7" :</label>
+                      <input type="color" id="sdkBgColor" value="#1e1d1e" style="height:36px; padding:2px;" />
+                    </div>
+                    <div class="form-group">
+                      <label>Couleur Accent / LED :</label>
+                      <input type="color" id="sdkAccentColor" value="#d31145" style="height:36px; padding:2px;" />
+                    </div>
+                    <div class="form-group">
+                      <label>Style de Contrôles :</label>
+                      <select id="sdkWidgetStyle">
+                        <option value="mixed" selected>Mixte (3 Knobs + 1 Fader)</option>
+                        <option value="knob">Tous en Knobs Rotatifs</option>
+                        <option value="fader">Tous en Faders Horizontaux</option>
+                        <option value="slider">Barres Tactiles (Sliders)</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-group" style="margin-top:4px;">
+                    <label>🖼️ PNG Film-Strip personnalisé optionnel (<code>knobImage</code> dans <code>assets/</code>) :</label>
+                    <input type="file" id="sdkKnobImageFile" accept="image/png" />
+                    <div id="sdkKnobImageStatus" style="font-size:0.72rem; color:var(--text-muted); margin-top:3px;">Par défaut : film-strip HD généré automatiquement selon ton thème.</div>
+                  </div>
+                </div>
+
+                <h4 id="sdkQLinksTitle">Assignation des 4 Q-Links Physiques (Page Principale)</h4>
+                <div class="form-row" id="sdkSimpleQLinks">
                   <div class="form-group">
                     <label>Q-Link 1 (Haut) :</label>
                     <input type="text" id="sdkQ1" value="Drive" maxlength="12" />
@@ -516,8 +564,6 @@
                     <label>Q-Link 2 :</label>
                     <input type="text" id="sdkQ2" value="Crush" maxlength="12" />
                   </div>
-                </div>
-                <div class="form-row">
                   <div class="form-group">
                     <label>Q-Link 3 :</label>
                     <input type="text" id="sdkQ3" value="Tone" maxlength="12" />
@@ -527,6 +573,7 @@
                     <input type="text" id="sdkQ4" value="Mix" maxlength="12" />
                   </div>
                 </div>
+                <div id="sdkGrid4x4" class="sdk-qlinks-4x4" style="display: none;"></div>
 
                 <div class="form-group" style="margin-top: 6px;">
                   <label>🎯 Destination d'installation automatique du dossier <code>VST2 Plugins</code> :</label>
@@ -563,7 +610,7 @@
                       <span class="skin-title" id="previewTitle">Arnaud Rigogne — Arnaud Vinyl Crusher</span>
                       <span class="skin-cpu">GLIBC 2.27 OK</span>
                     </div>
-                    <div class="skin-knobs-row">
+                    <div class="skin-knobs-row" id="sdkPreviewKnobsGrid">
                       <div class="skin-knob-card">
                         <div class="dial-ring"><div class="dial-needle" style="transform: rotate(35deg)"></div></div>
                         <span class="skin-k-name" id="prevQ1">Drive</span>
@@ -586,7 +633,7 @@
                       </div>
                     </div>
                     <div class="skin-xy-footer">
-                      <span>KIT GRAPHIQUE FILM-STRIP : MPC-RED (90×90 px)</span>
+                      <span id="previewKitFooter">KIT GRAPHIQUE FILM-STRIP : MPC-RED (90×90 px)</span>
                       <span>VALIDATION : VSTPluginMain EXPORTED</span>
                     </div>
                   </div>
