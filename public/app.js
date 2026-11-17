@@ -562,6 +562,11 @@ function applyPromptToSdk(promptText) {
     dspSel.value = 'subsynth';
     nameInp.value = 'Arnaud Analog Poly';
     q1.value = 'Cutoff'; q2.value = 'Attack'; q3.value = 'Release'; q4.value = 'Gain';
+  } else if (p.includes('pro-q') || p.includes('proq') || p.includes('égaliseur') || p.includes('eq') || p.includes('mid/side') || p.includes('dynamique')) {
+    catSel.value = 'effect';
+    dspSel.value = 'proq3';
+    nameInp.value = 'Arnaud ProQ3 DynEQ';
+    applyProQ3Preset();
   } else if (p.includes('delay') || p.includes('dub') || p.includes('echo') || p.includes('écho') || p.includes('ping')) {
     catSel.value = 'effect';
     dspSel.value = 'dubdelay';
@@ -593,6 +598,30 @@ function applyPromptToSdk(promptText) {
   updateSdkPreview();
 }
 
+function applyProQ3Preset() {
+  qLinks16 = [
+    'HPF Hz', 'Low Freq', 'Low Gain', 'Low Q',
+    'Mid1 Freq', 'Mid1 Gain', 'Mid1 Q', 'Mid1 Dyn',
+    'Mid2 Freq', 'Mid2 Gain', 'Mid2 Q', 'LPF Hz',
+    'High Freq', 'High Gain', 'M/S Width', 'Out Trim'
+  ];
+  for (let i = 0; i < 4; i++) {
+    const el = document.getElementById(`sdkQ${i + 1}`);
+    if (el) el.value = qLinks16[i];
+  }
+  const modeSel = document.getElementById('sdkQLinkMode');
+  if (modeSel) modeSel.value = '16';
+  const themeSel = document.getElementById('sdkUiTheme');
+  if (themeSel) themeSel.value = 'cyan';
+  const bgInp = document.getElementById('sdkBgColor');
+  if (bgInp) bgInp.value = '#0b0e16';
+  const accInp = document.getElementById('sdkAccentColor');
+  if (accInp) accInp.value = '#00e5ff';
+  selectedFilmstripPreset = 'fabfilter_glow.png';
+  uploadedKnobImageBase64 = null;
+  uploadedKnobImageName = null;
+}
+
 function toggleSamplerBox() {
   const dsp = document.getElementById('sdkDspTemplate')?.value;
   const cat = document.getElementById('sdkPluginCategory');
@@ -612,7 +641,16 @@ async function initSdkTab() {
     if (!el) return;
     const onChange = () => {
       customCppOverride = null;
-      if (id === 'sdkDspTemplate') toggleSamplerBox();
+      if (id === 'sdkDspTemplate') {
+        if (el.value === 'proq3') {
+          const nEl = document.getElementById('sdkPluginName');
+          if (nEl) nEl.value = 'Arnaud ProQ3 DynEQ';
+          applyProQ3Preset();
+          renderQLinkModeUI();
+          renderFilmstripGallery();
+        }
+        toggleSamplerBox();
+      }
       if (id === 'sdkQLinkMode') renderQLinkModeUI();
       if (id === 'sdkUiTheme') {
         const themeColors = {
@@ -1016,8 +1054,8 @@ function buildSdkBundle() {
   };
 
   const rootNote = Number(document.getElementById('sdkRootNote')?.value || 60);
-  let generatedCpp = generateSdkCppCode({ folderName, vendor, className, uid, isInstrument, dsp, q1, q2, q3, q4, rootNote });
-  if (qMode === '16') {
+  let generatedCpp = generateSdkCppCode({ folderName, vendor, className, uid, isInstrument, dsp, q1, q2, q3, q4, rootNote, activeQNames });
+  if (qMode === '16' && dsp !== 'proq3') {
     const extraParams = activeQNames.slice(4).map((name, idx) =>
       `        addParam(mpc::floatParam("p${idx + 5}", "${name}", 0.0f, 100.0f, 50.0f, "%", 0));`
     ).join('\n');
@@ -1049,7 +1087,7 @@ function buildSdkBundle() {
   };
 }
 
-function generateSdkCppCode({ folderName, vendor, className, uid, isInstrument, dsp, q1, q2, q3, q4, rootNote }) {
+function generateSdkCppCode({ folderName, vendor, className, uid, isInstrument, dsp, q1, q2, q3, q4, rootNote, activeQNames = [] }) {
   const infoBlock = `    static mpc::PluginInfo makeInfo()
     {
         mpc::PluginInfo info;
@@ -1569,6 +1607,121 @@ public:
 private:
 ${infoBlock}
     float env_ = 0.0f, atk_ = 0.99f, rel_ = 0.999f, sampleRate_ = 44100.0f;
+};
+MPC_PLUGIN_ENTRY(${className})
+`;
+  }
+
+  if (dsp === 'proq3') {
+    const n = (i, fallback) => escapeHtml(activeQNames[i] || fallback).replace(/"/g, '');
+    return `// ${folderName} — Pro-Q3 Style 4-Band Parametric + Dynamic EQ + Mid/Side by ${vendor}
+#include "mpc_plugin.h"
+#include "dsp/biquad.h"
+#include <cmath>
+
+namespace {
+enum ParamIndex {
+    kHpfHz = 0, kLowFreq, kLowGain, kLowQ,
+    kMid1Freq, kMid1Gain, kMid1Q, kMid1Dyn,
+    kMid2Freq, kMid2Gain, kMid2Q, kLpfHz,
+    kHighFreq, kHighGain, kMsWidth, kOutTrim,
+    kNumParams
+};
+} // namespace
+
+class ${className} : public mpc::Plugin {
+public:
+    ${className}() : mpc::Plugin(makeInfo()) {
+        // Bank 1: HPF + Low Shelf
+        addParam(mpc::logParam  ("p1",  "${n(0, 'HPF Hz')}",    20.0f,  500.0f,   30.0f,   "Hz", 0));
+        addParam(mpc::logParam  ("p2",  "${n(1, 'Low Freq')}",  40.0f,  400.0f,   100.0f,  "Hz", 0));
+        addParam(mpc::floatParam("p3",  "${n(2, 'Low Gain')}",  -18.0f, 18.0f,    0.0f,    "dB", 1));
+        addParam(mpc::floatParam("p4",  "${n(3, 'Low Q')}",     0.3f,   4.0f,     0.71f,   "",   2));
+        // Bank 2: Mid 1 Bell + Dynamic EQ
+        addParam(mpc::logParam  ("p5",  "${n(4, 'Mid1 Freq')}", 150.0f, 2500.0f,  350.0f,  "Hz", 0));
+        addParam(mpc::floatParam("p6",  "${n(5, 'Mid1 Gain')}", -18.0f, 18.0f,    0.0f,    "dB", 1));
+        addParam(mpc::floatParam("p7",  "${n(6, 'Mid1 Q')}",    0.3f,   8.0f,     1.2f,    "",   2));
+        addParam(mpc::floatParam("p8",  "${n(7, 'Mid1 Dyn')}",  0.0f,   12.0f,    3.0f,    "dB", 1));
+        // Bank 3: Mid 2 Bell + LPF
+        addParam(mpc::logParam  ("p9",  "${n(8, 'Mid2 Freq')}", 800.0f, 8000.0f,  2800.0f, "Hz", 0));
+        addParam(mpc::floatParam("p10", "${n(9, 'Mid2 Gain')}", -18.0f, 18.0f,    0.0f,    "dB", 1));
+        addParam(mpc::floatParam("p11", "${n(10,'Mid2 Q')}",    0.3f,   8.0f,     1.2f,    "",   2));
+        addParam(mpc::logParam  ("p12", "${n(11,'LPF Hz')}",    1500.0f,20000.0f, 18500.0f,"Hz", 0));
+        // Bank 4: High Shelf + Mid/Side Width + Out Trim
+        addParam(mpc::logParam  ("p13", "${n(12,'High Freq')}", 3000.0f,16000.0f, 8500.0f, "Hz", 0));
+        addParam(mpc::floatParam("p14", "${n(13,'High Gain')}", -18.0f, 18.0f,    0.0f,    "dB", 1));
+        addParam(mpc::floatParam("p15", "${n(14,'M/S Width')}", 0.0f,   200.0f,   100.0f,  "%",  0));
+        addParam(mpc::floatParam("p16", "${n(15,'Out Trim')}",  -12.0f, 12.0f,    0.0f,    "dB", 1));
+
+        addProgram("Clean Mastering", {30.0f, 90.0f, 0.5f, 0.71f, 280.0f, -1.5f, 1.4f, 3.0f, 3200.0f, 1.0f, 1.0f, 19000.0f, 10000.0f, 1.5f, 108.0f, 0.0f});
+        addProgram("Vocal / Sample Cut", {95.0f, 120.0f, -2.0f, 0.71f, 350.0f, -2.5f, 1.8f, 5.0f, 3500.0f, 2.5f, 1.2f, 16500.0f, 9000.0f, 2.0f, 115.0f, 0.0f});
+    }
+
+    void prepare(double sr, int) override {
+        sampleRate_ = (float)sr;
+        atk_ = std::exp(-1.0f / (0.010f * sampleRate_));
+        rel_ = std::exp(-1.0f / (0.120f * sampleRate_));
+        reset();
+    }
+
+    void reset() override {
+        hpf_.reset(); low_.reset(); mid1_.reset(); mid2_.reset(); high_.reset(); lpf_.reset(); scBand_.reset();
+        dynEnv_ = 0.0f;
+    }
+
+    void process(mpc::ProcessContext& ctx) override {
+        using namespace mpc::dsp;
+        const float hpfHz   = mpc::clamp(get(kHpfHz), 20.0f, 0.45f * sampleRate_);
+        const float lpfHz   = mpc::clamp(get(kLpfHz), 200.0f, 0.45f * sampleRate_);
+        const float m1Freq  = mpc::clamp(get(kMid1Freq), 40.0f, 0.45f * sampleRate_);
+        const float m1Q     = get(kMid1Q);
+        const float dynMax  = get(kMid1Dyn);
+        const float width   = get(kMsWidth) * 0.01f;
+        const float outGain = std::pow(10.0f, get(kOutTrim) / 20.0f);
+
+        hpf_.setCoeffs (BiquadCoeffs::highpass (sampleRate_, hpfHz, 0.7071f));
+        low_.setCoeffs (BiquadCoeffs::lowShelf (sampleRate_, get(kLowFreq), get(kLowQ), get(kLowGain)));
+        mid2_.setCoeffs(BiquadCoeffs::peak     (sampleRate_, mpc::clamp(get(kMid2Freq), 40.0f, 0.45f * sampleRate_), get(kMid2Q), get(kMid2Gain)));
+        high_.setCoeffs(BiquadCoeffs::highShelf(sampleRate_, mpc::clamp(get(kHighFreq), 100.0f, 0.45f * sampleRate_), 0.7071f, get(kHighGain)));
+        lpf_.setCoeffs (BiquadCoeffs::lowpass  (sampleRate_, lpfHz, 0.7071f));
+        scBand_.setCoeffs(BiquadCoeffs::bandpass(sampleRate_, m1Freq, m1Q));
+
+        const float* inL = ctx.inputs[0];
+        const float* inR = ctx.numInputs > 1 ? ctx.inputs[1] : ctx.inputs[0];
+        float* outL = ctx.outputs[0];
+        float* outR = ctx.numOutputs > 1 ? ctx.outputs[1] : nullptr;
+
+        // Dynamic EQ envelope measured across block, applied cleanly per block
+        float blockPeak = 0.0f;
+        for (int i = 0; i < ctx.numFrames; ++i) {
+            float sL = inL[i], sR = inR[i];
+            scBand_.process(sL, sR);
+            const float det = 0.5f * (std::fabs(sL) + std::fabs(sR));
+            dynEnv_ = (det > dynEnv_) ? (atk_ * dynEnv_ + (1.0f - atk_) * det) : (rel_ * dynEnv_ + (1.0f - rel_) * det);
+            if (dynEnv_ > blockPeak) blockPeak = dynEnv_;
+        }
+        const float dynCutDb = -dynMax * mpc::clamp((blockPeak - 0.05f) * 3.0f, 0.0f, 1.0f);
+        mid1_.setCoeffs(BiquadCoeffs::peak(sampleRate_, m1Freq, m1Q, get(kMid1Gain) + dynCutDb));
+
+        for (int i = 0; i < ctx.numFrames; ++i) {
+            float l = inL[i], r = inR[i];
+            hpf_.process(l, r);
+            low_.process(l, r);
+            mid1_.process(l, r);
+            mid2_.process(l, r);
+            high_.process(l, r);
+            lpf_.process(l, r);
+            const float mid  = 0.5f * (l + r);
+            const float side = 0.5f * (l - r) * width;
+            outL[i] = (mid + side) * outGain;
+            if (outR) outR[i] = (mid - side) * outGain;
+        }
+    }
+
+private:
+${infoBlock}
+    mpc::dsp::StereoBiquad hpf_, low_, mid1_, mid2_, high_, lpf_, scBand_;
+    float dynEnv_ = 0.0f, atk_ = 0.99f, rel_ = 0.999f, sampleRate_ = 44100.0f;
 };
 MPC_PLUGIN_ENTRY(${className})
 `;
