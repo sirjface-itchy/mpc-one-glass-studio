@@ -1141,6 +1141,10 @@ public:
         addProgram("Natural Sample", {14000.0f, 5.0f,  450.0f, -3.0f});
         addProgram("Warm Pad Tail",  {3200.0f,  180.0f,1400.0f,-4.0f});
         addProgram("LoFi Keys",      {2400.0f,  4.0f,  250.0f, -2.0f});
+        addProgram("Dark Strings",   {1800.0f,  280.0f,1800.0f,-3.5f});
+        addProgram("Pluck Staccato", {8500.0f,  1.5f,  120.0f, -2.0f});
+        addProgram("Dream Swell",    {4500.0f,  600.0f,2400.0f,-4.0f});
+        addProgram("Bright Lead",    {16000.0f, 2.0f,  320.0f, -2.5f});
     }
 
     void prepare(double sampleRate, int maxBlockSize) override
@@ -1264,6 +1268,11 @@ public:
         addParam(mpc::floatParam("p4", "${q4}", -36.0f, 6.0f, -6.0f, "dB", 1));
         addProgram("DX Electric Keys", {2.2f, 2.0f, 520.0f, -5.0f});
         addProgram("Metallic Bell",    {5.5f, 3.5f, 1400.0f,-6.0f});
+        addProgram("FM Sub Bass",      {1.2f, 1.0f, 220.0f, -3.0f});
+        addProgram("Lately Bass",      {3.8f, 1.0f, 180.0f, -3.5f});
+        addProgram("Glass Marimba",    {4.2f, 4.0f, 380.0f, -5.0f});
+        addProgram("Cyber Lead",       {6.5f, 1.5f, 450.0f, -5.0f});
+        addProgram("Soft Organ",       {1.6f, 3.0f, 300.0f, -4.5f});
     }
     void prepare(double sr, int) override { sampleRate_ = (float)sr; reset(); }
     void reset() override { for (FmVoice& v : voices_) v = FmVoice(); }
@@ -1334,6 +1343,11 @@ public:
         addParam(mpc::floatParam("p4", "${q4}", -36.0f, 6.0f,    -6.0f,   "dB", 1));
         addProgram("Warm BoomBap Sub", {1200.0f, 10.0f, 400.0f, -4.0f});
         addProgram("LoFi Synth Keys",  {3800.0f, 25.0f, 650.0f, -6.0f});
+        addProgram("G-Funk Lead",      {9500.0f, 5.0f,  250.0f, -4.0f});
+        addProgram("Deep 808 Reese",   {650.0f,  18.0f, 550.0f, -3.0f});
+        addProgram("Analog Brass Pad", {2400.0f, 160.0f,1200.0f,-5.5f});
+        addProgram("Pluck Synth",      {5200.0f, 2.0f,  160.0f, -4.0f});
+        addProgram("Dark Ambient",     {900.0f,  450.0f,2200.0f,-6.0f});
     }
     void prepare(double sampleRate, int) override { sampleRate_ = (float)sampleRate; reset(); }
     void reset() override { for (Voice& v : voices_) v = Voice(); }
@@ -1398,8 +1412,13 @@ public:
         addParam(mpc::floatParam("p2", "${q2}", 0.0f,  90.0f,   45.0f,  "%",  0));
         addParam(mpc::logParam  ("p3", "${q3}", 300.0f,14000.0f,3800.0f,"Hz", 0));
         addParam(mpc::floatParam("p4", "${q4}", 0.0f,  100.0f,  35.0f,  "%",  0));
-        addProgram("Dub Tape 1/8",   {333.0f, 52.0f, 2800.0f, 40.0f});
-        addProgram("Slapback Retro", {115.0f, 18.0f, 5500.0f, 30.0f});
+        addProgram("Dub Tape 1/8",     {333.0f, 52.0f, 2800.0f, 40.0f});
+        addProgram("Slapback Retro",   {115.0f, 18.0f, 5500.0f, 30.0f});
+        addProgram("Triplet Echo",     {250.0f, 45.0f, 3400.0f, 38.0f});
+        addProgram("Dark Dub Room",    {480.0f, 65.0f, 1600.0f, 48.0f});
+        addProgram("Space Echo 1/4",   {500.0f, 58.0f, 2400.0f, 42.0f});
+        addProgram("Lo-Fi Telephone",  {290.0f, 40.0f, 1100.0f, 50.0f});
+        addProgram("Infinite Dub",     {375.0f, 82.0f, 2100.0f, 55.0f});
     }
     void prepare(double sr, int) override {
         sampleRate_ = (float)sr;
@@ -1412,9 +1431,10 @@ public:
         lpL_.reset(); lpR_.reset();
     }
     void process(mpc::ProcessContext& ctx) override {
-        const float dSamples = mpc::clamp(get(kTimeMs) * 0.001f * sampleRate_, 1.0f, (float)delayL_.maxDelay() - 1.0f);
+        const float dSamplesL = mpc::clamp(get(kTimeMs) * 0.001f * sampleRate_, 1.0f, (float)delayL_.maxDelay() - 2.0f);
+        const float dSamplesR = mpc::clamp(dSamplesL * 1.025f, 1.0f, (float)delayR_.maxDelay() - 2.0f);
         const float fb = get(kFeedback) * 0.01f;
-        const float mix = get(kMix) * 0.01f;
+        const float mix = std::pow(get(kMix) * 0.01f, 0.72f);
         lpL_.setCutoff(get(kTone), sampleRate_); lpR_.setCutoff(get(kTone), sampleRate_);
         const float* inL = ctx.inputs[0];
         const float* inR = ctx.numInputs > 1 ? ctx.inputs[1] : ctx.inputs[0];
@@ -1422,10 +1442,10 @@ public:
         float* outR = ctx.numOutputs > 1 ? ctx.outputs[1] : nullptr;
         for (int i = 0; i < ctx.numFrames; ++i) {
             const float dL = inL[i], dR = inR[i];
-            float wL = lpL_.process(delayL_.readLinear(dSamples));
-            float wR = lpR_.process(delayR_.readLinear(dSamples));
-            delayL_.write(std::tanh(dL + wR * fb));
-            delayR_.write(std::tanh(dR + wL * fb));
+            float wL = lpL_.process(delayL_.readLinear(dSamplesL));
+            float wR = lpR_.process(delayR_.readLinear(dSamplesR));
+            delayL_.write(std::tanh((dL + wR * fb) * 1.15f));
+            delayR_.write(std::tanh((dR + wL * fb) * 1.15f));
             outL[i] = dL + (wL - dL) * mix;
             if (outR) outR[i] = dR + (wR - dR) * mix;
         }
@@ -1458,8 +1478,13 @@ public:
         addParam(mpc::floatParam("p2", "${q2}", 0.0f, 100.0f, 45.0f, "%", 0));
         addParam(mpc::floatParam("p3", "${q3}", 0.0f, 12.0f, 2.0f, "dB", 1));
         addParam(mpc::floatParam("p4", "${q4}", 0.0f, 100.0f, 50.0f, "%", 0));
-        addProgram("Juno Chorus I",  {0.6f, 40.0f, 1.5f, 50.0f});
-        addProgram("Juno Chorus II", {1.1f, 75.0f, 3.0f, 60.0f});
+        addProgram("Juno Chorus I",  {0.55f, 42.0f, 2.0f, 50.0f});
+        addProgram("Juno Chorus II", {1.15f, 75.0f, 3.5f, 65.0f});
+        addProgram("Warm Tape ADT",  {0.35f, 28.0f, 5.0f, 45.0f});
+        addProgram("Lush Ensemble",  {1.65f, 88.0f, 2.5f, 75.0f});
+        addProgram("Fast Vibrato",   {4.20f, 60.0f, 1.5f, 90.0f});
+        addProgram("Subtle Wide",    {0.40f, 25.0f, 1.0f, 32.0f});
+        addProgram("80s Synthwave",  {0.85f, 65.0f, 4.5f, 60.0f});
     }
     void prepare(double sr, int) override {
         sampleRate_ = (float)sr;
@@ -1470,10 +1495,10 @@ public:
     void reset() override { dl_.reset(); dr_.reset(); lfoPhase_ = 0.0f; }
     void process(mpc::ProcessContext& ctx) override {
         const float rateInc = get(kRate) / sampleRate_;
-        const float depthS = (get(kDepth) * 0.01f) * 0.006f * sampleRate_;
-        const float baseS = 0.010f * sampleRate_;
-        const float drive = std::pow(10.0f, get(kWarmth) / 20.0f);
-        const float mix = get(kMix) * 0.01f;
+        const float depthS = std::pow(get(kDepth) * 0.01f, 0.65f) * 0.0085f * sampleRate_;
+        const float baseS = 0.011f * sampleRate_;
+        const float drive = std::pow(10.0f, get(kWarmth) / 20.0f) * 1.25f;
+        const float mix = std::pow(get(kMix) * 0.01f, 0.70f);
         const float* inL = ctx.inputs[0];
         const float* inR = ctx.numInputs > 1 ? ctx.inputs[1] : ctx.inputs[0];
         float* outL = ctx.outputs[0];
@@ -1519,8 +1544,13 @@ public:
         addParam(mpc::floatParam("p2", "${q2}", 0.0f,  95.0f,    35.0f,   "%",  0));
         addParam(mpc::floatParam("p3", "${q3}", 0.0f,  18.0f,    3.0f,    "dB", 1));
         addParam(mpc::floatParam("p4", "${q4}", 0.0f,  100.0f,   15.0f,   "%",  0));
-        addProgram("Warm Sweep", {1400.0f, 45.0f, 4.0f, 25.0f});
-        addProgram("Sub Muffle", {420.0f,  20.0f, 6.0f, 0.0f});
+        addProgram("Warm Sweep",     {1400.0f, 45.0f, 4.0f, 25.0f});
+        addProgram("Sub Muffle",     {380.0f,  25.0f, 6.0f, 0.0f});
+        addProgram("Acid Squelch",   {950.0f,  82.0f, 9.0f, 45.0f});
+        addProgram("Lo-Fi Radio",    {1100.0f, 35.0f, 8.0f, 0.0f});
+        addProgram("Funk Auto-Wah",  {1600.0f, 68.0f, 4.0f, 75.0f});
+        addProgram("Deep Dub LP",    {520.0f,  52.0f, 5.0f, 30.0f});
+        addProgram("Crispy Drive",   {6500.0f, 18.0f, 12.0f,10.0f});
     }
     void prepare(double sr, int) override {
         sampleRate_ = (float)sr;
@@ -1530,8 +1560,8 @@ public:
     void reset() override { svfL_.reset(); svfR_.reset(); lfo_ = 0.0f; }
     void process(mpc::ProcessContext& ctx) override {
         const float baseCut = get(kCutoff);
-        const float res01 = mpc::clamp(get(kRes) * 0.01f, 0.0f, 0.95f);
-        const float drive = std::pow(10.0f, get(kDrive) / 20.0f);
+        const float res01 = mpc::clamp(std::pow(get(kRes) * 0.01f, 0.62f) * 0.94f, 0.0f, 0.95f);
+        const float drive = std::pow(10.0f, get(kDrive) / 20.0f) * 1.4f;
         const float lfoAmt = get(kLfoAmt) * 0.01f;
         const float lfoInc = 0.6f / sampleRate_;
         const float* inL = ctx.inputs[0];
@@ -1569,17 +1599,22 @@ enum ParamIndex { kThresh = 0, kRatio, kMakeup, kMix, kNumParams };
 class ${className} : public mpc::Plugin {
 public:
     ${className}() : mpc::Plugin(makeInfo()) {
-        addParam(mpc::floatParam("p1", "${q1}", -40.0f, 0.0f, -14.0f, "dB", 1));
+        addParam(mpc::floatParam("p1", "${q1}", -45.0f, 0.0f, -20.0f, "dB", 1));
         addParam(mpc::floatParam("p2", "${q2}", 1.0f, 12.0f, 4.0f, ":1", 1));
-        addParam(mpc::floatParam("p3", "${q3}", 0.0f, 18.0f, 3.0f, "dB", 1));
+        addParam(mpc::floatParam("p3", "${q3}", 0.0f, 18.0f, 3.5f, "dB", 1));
         addParam(mpc::floatParam("p4", "${q4}", 0.0f, 100.0f, 100.0f, "%", 0));
-        addProgram("Drum Glue", {-16.0f, 4.0f, 3.5f, 100.0f});
-        addProgram("NY Parallel", {-24.0f, 8.0f, 6.0f, 45.0f});
+        addProgram("Drum Glue",       {-18.0f, 4.0f,  3.5f, 100.0f});
+        addProgram("NY Parallel",     {-28.0f, 8.0f,  6.5f, 45.0f});
+        addProgram("Boom-Bap Crunch", {-24.0f, 6.0f,  5.0f, 85.0f});
+        addProgram("Vocal / Sample",  {-22.0f, 3.5f,  4.0f, 100.0f});
+        addProgram("Master Slam",     {-14.0f, 10.0f, 4.5f, 100.0f});
+        addProgram("Gentle Bus",      {-16.0f, 2.2f,  2.0f, 100.0f});
+        addProgram("Pump Feel",       {-32.0f, 11.0f, 7.5f, 65.0f});
     }
     void prepare(double sr, int) override {
         sampleRate_ = (float)sr;
-        atk_ = std::exp(-1.0f / (0.008f * sampleRate_));
-        rel_ = std::exp(-1.0f / (0.120f * sampleRate_));
+        atk_ = std::exp(-1.0f / (0.003f * sampleRate_));
+        rel_ = std::exp(-1.0f / (0.110f * sampleRate_));
         reset();
     }
     void reset() override { env_ = 0.0f; }
@@ -1653,8 +1688,14 @@ public:
         addParam(mpc::floatParam("p15", "${n(14,'M/S Width')}", 0.0f,   200.0f,   100.0f,  "%",  0));
         addParam(mpc::floatParam("p16", "${n(15,'Out Trim')}",  -12.0f, 12.0f,    0.0f,    "dB", 1));
 
-        addProgram("Clean Mastering", {30.0f, 90.0f, 0.5f, 0.71f, 280.0f, -1.5f, 1.4f, 3.0f, 3200.0f, 1.0f, 1.0f, 19000.0f, 10000.0f, 1.5f, 108.0f, 0.0f});
+        addProgram("Clean Mastering",    {30.0f, 90.0f, 0.5f, 0.71f, 280.0f, -1.5f, 1.4f, 3.0f, 3200.0f, 1.0f, 1.0f, 19000.0f, 10000.0f, 1.5f, 108.0f, 0.0f});
         addProgram("Vocal / Sample Cut", {95.0f, 120.0f, -2.0f, 0.71f, 350.0f, -2.5f, 1.8f, 5.0f, 3500.0f, 2.5f, 1.2f, 16500.0f, 9000.0f, 2.0f, 115.0f, 0.0f});
+        addProgram("Boom-Bap Punch",     {35.0f, 75.0f, 2.5f, 0.71f, 320.0f, -3.0f, 1.5f, 4.5f, 2600.0f, 2.0f, 1.1f, 17500.0f, 8000.0f, 1.5f, 105.0f, 0.5f});
+        addProgram("De-Mud 250Hz Dyn",   {50.0f, 100.0f, 0.0f, 0.71f, 250.0f, -2.0f, 2.0f, 7.5f, 4000.0f, 1.5f, 1.0f, 18500.0f, 10000.0f, 1.0f, 100.0f, 0.0f});
+        addProgram("Air & Presence",     {40.0f, 90.0f, 1.0f, 0.71f, 450.0f, -1.0f, 1.0f, 2.0f, 4200.0f, 3.0f, 0.9f, 20000.0f, 11000.0f, 3.5f, 120.0f, -0.5f});
+        addProgram("Sub Tightener",      {38.0f, 65.0f, 3.0f, 0.85f, 180.0f, -3.5f, 2.2f, 6.0f, 1800.0f, 0.5f, 1.0f, 15000.0f, 7500.0f, 0.0f, 85.0f, 0.0f});
+        addProgram("Lo-Fi Telephone",    {380.0f, 350.0f, -6.0f, 0.71f, 1100.0f, 4.5f, 1.6f, 2.0f, 2200.0f, 3.0f, 1.5f, 3600.0f, 4000.0f, -8.0f, 60.0f, 1.0f});
+        addProgram("Wide Stereo Bus",    {28.0f, 80.0f, 1.5f, 0.71f, 300.0f, -1.5f, 1.2f, 3.5f, 3600.0f, 1.5f, 0.8f, 19500.0f, 9500.0f, 2.5f, 145.0f, -0.5f});
     }
 
     void prepare(double sr, int) override {
@@ -1700,7 +1741,7 @@ public:
             dynEnv_ = (det > dynEnv_) ? (atk_ * dynEnv_ + (1.0f - atk_) * det) : (rel_ * dynEnv_ + (1.0f - rel_) * det);
             if (dynEnv_ > blockPeak) blockPeak = dynEnv_;
         }
-        const float dynCutDb = -dynMax * mpc::clamp((blockPeak - 0.05f) * 3.0f, 0.0f, 1.0f);
+        const float dynCutDb = -dynMax * mpc::clamp((blockPeak - 0.012f) * 7.0f, 0.0f, 1.0f);
         mid1_.setCoeffs(BiquadCoeffs::peak(sampleRate_, m1Freq, m1Q, get(kMid1Gain) + dynCutDb));
 
         for (int i = 0; i < ctx.numFrames; ++i) {
@@ -1746,8 +1787,13 @@ public:
         addParam(mpc::floatParam("p2", "${q2}", 0.0f,  18.0f,  4.0f,  "dB", 1));
         addParam(mpc::floatParam("p3", "${q3}", 0.0f,  100.0f, 20.0f, "%",  0));
         addParam(mpc::floatParam("p4", "${q4}", -12.0f, 0.0f,  -0.5f, "dB", 1));
-        addProgram("BoomBap Strip", {95.0f, 6.0f, 15.0f, -0.5f});
-        addProgram("Synth Glue",    {45.0f, 3.0f, 45.0f, -1.0f});
+        addProgram("BoomBap Strip",  {95.0f,  6.5f, 18.0f, -0.5f});
+        addProgram("Synth Glue",     {45.0f,  4.0f, 48.0f, -1.0f});
+        addProgram("Tape Warmth",    {60.0f,  8.5f, 12.0f, -0.5f});
+        addProgram("Juno Air",       {110.0f, 3.0f, 65.0f, -1.0f});
+        addProgram("Drum Bus Slam",  {35.0f, 11.0f,  5.0f, -0.5f});
+        addProgram("Subtle Polish",  {75.0f,  2.5f, 25.0f, -0.5f});
+        addProgram("Lo-Fi Radio",    {320.0f,13.0f, 30.0f, -1.5f});
     }
     void prepare(double sr, int) override {
         sampleRate_ = (float)sr;
@@ -1758,12 +1804,12 @@ public:
     void reset() override { hpL_.reset(); hpR_.reset(); dl_.reset(); dr_.reset(); lfo_ = 0.0f; }
     void process(mpc::ProcessContext& ctx) override {
         hpL_.setCutoff(get(kHpf), sampleRate_); hpR_.setCutoff(get(kHpf), sampleRate_);
-        const float drive = std::pow(10.0f, get(kDrive) / 20.0f);
-        const float chMix = get(kChorus) * 0.005f;
+        const float drive = std::pow(10.0f, get(kDrive) / 20.0f) * 1.45f;
+        const float chMix = std::pow(get(kChorus) * 0.01f, 0.72f) * 0.85f;
         const float outG  = std::pow(10.0f, get(kClipOut) / 20.0f);
         const float lfoInc = 0.75f / sampleRate_;
-        const float baseS = 0.009f * sampleRate_;
-        const float depthS = 0.004f * sampleRate_;
+        const float baseS = 0.010f * sampleRate_;
+        const float depthS = 0.006f * sampleRate_;
         const float* inL = ctx.inputs[0];
         const float* inR = ctx.numInputs > 1 ? ctx.inputs[1] : ctx.inputs[0];
         float* outL = ctx.outputs[0];
@@ -1818,23 +1864,37 @@ public:
         addParam(mpc::floatParam("p2", "${q2}", 0.0f,   100.0f,   35.0f,  "%",  0));
         addParam(mpc::logParam  ("p3", "${q3}", 200.0f, 18000.0f, 4500.0f,"Hz", 0));
         addParam(mpc::floatParam("p4", "${q4}", 0.0f,   100.0f,   80.0f,  "%",  0));
-        addProgram("SP-1200 Grit",   {9.0f,  55.0f, 3200.0f, 85.0f});
-        addProgram("Warm Tape Glue", {4.5f,  10.0f, 7500.0f, 70.0f});
+        addProgram("SP-1200 Grit",      {9.0f,  55.0f, 3200.0f, 85.0f});
+        addProgram("Warm Tape Glue",    {5.5f,  15.0f, 7500.0f, 75.0f});
+        addProgram("LoFi Vinyl Box",    {12.0f, 68.0f, 1800.0f, 100.0f});
+        addProgram("Akai S950 12-Bit",  {6.5f,  40.0f, 4800.0f, 90.0f});
+        addProgram("MPC60 Punch",       {8.0f,  30.0f, 6200.0f, 80.0f});
+        addProgram("Cassette Crunch",   {14.0f, 45.0f, 2400.0f, 85.0f});
+        addProgram("Subtle Analog Heat",{4.0f,  8.0f,  11000.0f,65.0f});
     }
     void prepare(double sr, int) override { sampleRate_ = (float)sr; reset(); }
-    void reset() override { for (OnePoleLP& f : filters_) f.reset(); }
+    void reset() override { for (OnePoleLP& f : filters_) f.reset(); holdCnt_ = 0; holdL_ = 0.0f; holdR_ = 0.0f; }
     void process(mpc::ProcessContext& ctx) override {
         const int numChannels = mpc::clamp(ctx.numOutputs, 0, kMaxChannels);
-        const float driveGain = std::pow(10.0f, get(kDrive) / 20.0f);
+        const float driveGain = std::pow(10.0f, get(kDrive) / 20.0f) * 1.75f;
         const float crushAmt = get(kCrush) * 0.01f;
-        const float mix = get(kMix) * 0.01f;
+        const float mix = std::pow(get(kMix) * 0.01f, 0.72f);
         for (OnePoleLP& f : filters_) f.setCutoff(get(kTone), sampleRate_);
-        const float steps = std::pow(2.0f, 12.0f - crushAmt * 7.0f);
+        const float bits = 10.0f - std::pow(crushAmt, 0.60f) * 7.2f;
+        const float steps = std::pow(2.0f, bits);
+        const int holdN = 1 + (int)(std::pow(crushAmt, 1.2f) * 10.0f);
         for (int i = 0; i < ctx.numFrames; ++i) {
+            const bool sampleHold = (holdCnt_ == 0);
+            if (++holdCnt_ >= holdN) holdCnt_ = 0;
             for (int ch = 0; ch < numChannels; ++ch) {
                 const float dry = (ctx.inputs && ch < ctx.numInputs && ctx.inputs[ch]) ? ctx.inputs[ch][i] : 0.0f;
                 float wet = std::tanh(dry * driveGain);
-                if (crushAmt > 0.02f) wet = std::round(wet * steps) / steps;
+                if (crushAmt > 0.02f) {
+                    wet = std::round(wet * steps) / steps;
+                    float& h = (ch == 0) ? holdL_ : holdR_;
+                    if (sampleHold) h = wet;
+                    else wet = h;
+                }
                 wet = filters_[ch].process(wet);
                 ctx.outputs[ch][i] = dry + (wet - dry) * mix;
             }
@@ -1843,6 +1903,8 @@ public:
 private:
 ${infoBlock}
     OnePoleLP filters_[kMaxChannels];
+    int holdCnt_ = 0;
+    float holdL_ = 0.0f, holdR_ = 0.0f;
     float sampleRate_ = 44100.0f;
 };
 MPC_PLUGIN_ENTRY(${className})
