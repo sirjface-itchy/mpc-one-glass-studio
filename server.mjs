@@ -442,6 +442,72 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Local AI Stem Separator (Demucs htdemucs -> drums, bass, vocals, other .wav)
+  if (url.pathname === '/api/separate-stems' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        if (!payload.wavBase64) throw new Error('Audio .wav manquant');
+        const rawName = (payload.fileName || 'track').replace(/\.[^.]+$/, '');
+        const slug = rawName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'track';
+        const stemBaseDir = path.join(PUBLIC_DIR, 'builds', 'stems', slug);
+        fs.rmSync(stemBaseDir, { recursive: true, force: true });
+        fs.mkdirSync(stemBaseDir, { recursive: true });
+
+        const cleanB64 = payload.wavBase64.replace(/^data:[^;]+;base64,/, '');
+        const inputWav = path.join(stemBaseDir, 'input.wav');
+        fs.writeFileSync(inputWav, Buffer.from(cleanB64, 'base64'));
+
+        const pyBin = path.join(__dirname, '.stem-tools', 'venv', 'bin', 'python');
+        const pyScript = path.join(__dirname, '.stem-tools', 'run_stems.py');
+        if (!fs.existsSync(pyBin) || !fs.existsSync(pyScript)) {
+          throw new Error('Environnement Demucs (.stem-tools) introuvable.');
+        }
+
+        await execFileAsync(pyBin, [pyScript, inputWav, stemBaseDir], {
+          cwd: __dirname,
+          timeout: 300000
+        });
+
+        const stemNames = ['drums', 'bass', 'vocals', 'other'].filter(s => fs.existsSync(path.join(stemBaseDir, `${s}.wav`)));
+        const zipName = `${slug}-stems-mpc.zip`;
+        const zipPath = path.join(PUBLIC_DIR, 'builds', 'stems', zipName);
+        fs.rmSync(zipPath, { force: true });
+        await execFileAsync('zip', ['-j', zipPath, ...stemNames.map(s => path.join(stemBaseDir, `${s}.wav`))]);
+
+        let deployedDir = null;
+        if (payload.copyToDrive && payload.targetDriveId) {
+          const drives = listAvailableDrives();
+          const chosen = drives.find(d => d.id === payload.targetDriveId);
+          if (chosen) {
+            const driveRoot = path.dirname(chosen.targetDir);
+            deployedDir = path.join(driveRoot, 'Samples', `Stems_${slug}`);
+            fs.mkdirSync(deployedDir, { recursive: true });
+            for (const s of stemNames) {
+              fs.copyFileSync(path.join(stemBaseDir, `${s}.wav`), path.join(deployedDir, `${slug}_${s}.wav`));
+            }
+          }
+        }
+
+        const t = Date.now();
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({
+          ok: true,
+          slug,
+          stems: stemNames.map(s => ({ name: s, url: `/builds/stems/${encodeURIComponent(slug)}/${s}.wav?t=${t}` })),
+          zipUrl: `/builds/stems/${encodeURIComponent(zipName)}?t=${t}`,
+          deployedDir
+        }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ ok: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
   // Scan existing .xpj projects on SD Save / Workspace
   if (url.pathname === '/api/projects' && req.method === 'GET') {
     const scanDirs = [

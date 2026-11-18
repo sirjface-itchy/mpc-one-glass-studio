@@ -4,4 +4,5 @@ public/builds/
 VST2 Plugins/
 Templates MPC One/
 mpc-plugin-builder-sdk/
+.stem-tools/
 *.log

@@ -444,10 +444,16 @@ export function initStudioTab() {
       if (sel && data.drives) {
         sel.innerHTML = data.drives.map(d => `<option value="${d.id}">${d.label}</option>`).join('');
       }
+      const stemSel = document.getElementById('stemTargetDrive');
+      if (stemSel && data.drives) {
+        stemSel.innerHTML = data.drives.map(d => `<option value="${d.id}">${d.label}</option>`).join('');
+      }
     })
     .catch(() => {
       const sel = document.getElementById('backupSourceDrive');
       if (sel) sel.innerHTML = '<option value="">Serveur local requis (localhost:3030)</option>';
+      const stemSel = document.getElementById('stemTargetDrive');
+      if (stemSel) stemSel.innerHTML = '<option value="">Serveur local requis (localhost:3030)</option>';
     });
 
   document.getElementById('scanProjectsBtn')?.addEventListener('click', async () => {
@@ -492,6 +498,81 @@ export function initStudioTab() {
       status.textContent = `✅ Sauvegarde terminée vers ${data.destRoot} : ${data.copiedFiles} élément(s) copié(s), ${data.skippedFiles} déjà à jour.`;
     } catch (err) {
       status.textContent = `❌ ${err.message}`;
+    }
+  });
+
+  // 5. AI Stem Separator (Demucs 4-Stems via local Mac server)
+  document.getElementById('stemSeparateBtn')?.addEventListener('click', async () => {
+    const fileInput = document.getElementById('stemAudioInput');
+    const resBox = document.getElementById('stemResultBox');
+    const btn = document.getElementById('stemSeparateBtn');
+    const file = fileInput?.files?.[0];
+    if (!file) {
+      resBox.style.display = 'block';
+      resBox.className = 'sdk-compile-result error';
+      resBox.textContent = '⚠️ Choisis d\'abord un fichier audio (.wav, .mp3, .m4a).';
+      return;
+    }
+
+    btn.disabled = true;
+    const origLabel = btn.innerHTML;
+    btn.innerHTML = '⏳ Séparation IA Demucs en cours (Drums, Bass, Vocals, Other)...';
+    resBox.style.display = 'block';
+    resBox.className = 'sdk-compile-result';
+    resBox.innerHTML = '⏳ Conversion en WAV 44.1 kHz + séparation IA Demucs sur ton Mac...';
+
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      const arr = await file.arrayBuffer();
+      const decoded = await audioCtx.decodeAudioData(arr);
+      const ch0 = decoded.getChannelData(0);
+      const ch1 = decoded.numberOfChannels > 1 ? decoded.getChannelData(1) : ch0;
+      const wavBytes = encodeWav16([ch0, ch1], decoded.sampleRate);
+
+      // Convert Uint8Array to base64 safely in chunks
+      let bin = '';
+      const chunk = 0x8000;
+      for (let i = 0; i < wavBytes.length; i += chunk) {
+        bin += String.fromCharCode.apply(null, wavBytes.subarray(i, i + chunk));
+      }
+      const wavBase64 = btoa(bin);
+
+      const resp = await fetch('/api/separate-stems', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          fileName: file.name,
+          wavBase64,
+          copyToDrive: document.getElementById('stemCopyToDrive')?.checked,
+          targetDriveId: document.getElementById('stemTargetDrive')?.value || 'workspace'
+        })
+      });
+      const data = await resp.json();
+      if (!data.ok) throw new Error(data.error || 'Erreur de séparation');
+
+      const icons = { drums: '🥁 Drums', bass: '🔊 Bass', vocals: '🎤 Vocals', other: '🎹 Other (Mélo)' };
+      resBox.innerHTML = `
+        <strong>✅ 4 Stems séparés avec succès !</strong>
+        ${data.deployedDir ? `<div style="margin-top:4px; font-size:0.78rem;">💾 Copiés dans : <code>${data.deployedDir}</code></div>` : ''}
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:8px; margin-top:10px;">
+          ${data.stems.map(s => `
+            <div style="background:rgba(11,14,22,0.75); border:1px solid var(--border-glass); border-radius:10px; padding:8px;">
+              <div style="font-size:0.78rem; font-weight:700; margin-bottom:4px;">${icons[s.name] || s.name}</div>
+              <audio controls src="${s.url}" style="width:100%; height:30px;"></audio>
+              <a href="${s.url}" download="${data.slug}_${s.name}.wav" style="font-size:0.72rem; color:var(--cyan);">⬇️ Télécharger ${s.name}.wav</a>
+            </div>
+          `).join('')}
+        </div>
+        <div class="sdk-result-actions" style="margin-top:10px;">
+          <a class="btn-download-zip" href="${data.zipUrl}" download>📦 Télécharger les 4 Stems (.zip)</a>
+        </div>
+      `;
+    } catch (err) {
+      resBox.className = 'sdk-compile-result error';
+      resBox.innerHTML = `❌ ${err.message} (Note : le séparateur IA tourne sur le serveur local Mac <code>node server.mjs</code>).`;
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = origLabel;
     }
   });
 }

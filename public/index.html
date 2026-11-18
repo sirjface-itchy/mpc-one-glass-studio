@@ -846,6 +846,40 @@
             <div id="sdBackupStatus" class="sdk-wav-status" style="margin-bottom:8px;"></div>
             <div id="projectsListBox" class="projects-list-box">Clique sur <strong>Scanner mes projets .xpj</strong> pour voir l'inventaire de tes morceaux.</div>
           </div>
+
+          <!-- 5. Séparateur de Stems IA (Demucs 4-Stems) -->
+          <div class="glass-card studio-tool-card" style="grid-column: 1 / -1;">
+            <div class="card-header">
+              <div>
+                <h2>🎚️ 5. Séparateur de Stems IA Gratuit (<code>Drums</code> / <code>Bass</code> / <code>Vocals</code> / <code>Other</code>)</h2>
+                <p>Isole gratuitement n'importe quel morceau ou sample vinyle (<code>.wav</code>, <code>.mp3</code>, <code>.m4a</code>) en 4 pistes séparées prêtes pour ta MPC One, grâce à Demucs sur ton Mac.</p>
+              </div>
+              <span class="badge-live">IA DEMUCS LOCAL (APPLE MPS)</span>
+            </div>
+            <div class="form-row-2">
+              <div class="form-group">
+                <label>Fichier Audio à séparer (<code>.wav</code>, <code>.mp3</code>, <code>.m4a</code>) :</label>
+                <input type="file" id="stemAudioInput" accept="audio/*" />
+              </div>
+              <div class="form-group">
+                <label>Destination de copie optionnelle (<code>Samples/Stems_...</code>) :</label>
+                <select id="stemTargetDrive"></select>
+              </div>
+            </div>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
+              <label class="check-pill"><input type="checkbox" id="stemCopyToDrive" checked /> Copier directement les 4 stems sur mon Disque / Carte SD</label>
+              <button class="btn-primary" id="stemSeparateBtn">⚡ Séparer en 4 Stems (.wav MPC One)</button>
+            </div>
+            <div id="stemResultBox" class="sdk-compile-result" style="display:none; margin-top:8px;"></div>
+            <details class="newbie-accordion" open>
+              <summary>📖 Guide Newbie : Utiliser ces 4 Stems dans ta MPC One</summary>
+              <ol>
+                <li>Copie le dossier <code>Samples/Stems_.../</code> sur ta <strong>Carte SD</strong> (ou coche la case ci-dessus pour le copier automatiquement).</li>
+                <li>Sur ta MPC One : appuie sur <code>BROWSE</code> → <strong>Places</strong> → ta <strong>Carte SD</strong> → <code>Samples/Stems_.../</code>.</li>
+                <li>Charge par exemple <code>vocals.wav</code> ou <code>other.wav</code> (les accords sans batterie !) puis appuie sur <code>SAMPLE EDIT</code> → <strong>CHOP</strong> pour découper ton sample sans les drums d'origine !</li>
+              </ol>
+            </details>
+          </div>
         </div>
       </section>
     </main>
