@@ -126,7 +126,7 @@ function initChat() {
   const clearBtn = document.getElementById('clearChatBtn');
 
   const welcomeHtml = `
-    <h4>Salut Arnaud ! Bienvenue dans ton MPC One Glass Studio (OS 3.10.1).</h4>
+    <h4>Salut Itchy ! Bienvenue dans ton MPC One Glass Studio (OS 3.10.1).</h4>
     <p>J'ai synchronisé ton <strong>NotebookLM</strong> (désormais enrichi à <strong>74 sources</strong> avec toute la documentation 3.9, 3.10 et 3.10.1) ainsi que l'intégralité de ton compte <strong>inMusic</strong> (ta <strong>MPC One</strong> série <code>A12201241842841</code>, ta <strong>Numark Scratch</strong>, ton <strong>MPK49</strong> et tes <strong>38 plugins & expansions</strong>).</p>
     <ul>
       <li><strong>VST Externes confirmés (3.10.1) :</strong> Tu peux maintenant charger des plugins compilés en Linux ARM64 dans le dossier <code>VST2 Plugins</code> à la racine de ta carte SD.</li>
@@ -224,7 +224,7 @@ async function handleUserQuery(query) {
 
   if (apiKey) {
     try {
-      const sysPrompt = `Tu es l'assistant expert MPC One (modèle original, OS 3.10.1 Standalone) d'Arnaud Rigogne. Réponds TOUJOURS en français, de façon ultra claire pour un débutant (Newbie) en détaillant chaque bouton physique (MENU, MAIN, BROWSE, SAMPLER, SAMPLE EDIT, PAD PERFORM, Q-LINK, TC) et chaque touche tactile. Formate ta réponse en HTML simple (<p>, <h4>, <ol>, <li>, <code>, <strong>).`;
+      const sysPrompt = `Tu es l'assistant expert MPC One (modèle original, OS 3.10.1 Standalone) d'Itchy. Réponds TOUJOURS en français, de façon ultra claire pour un débutant (Newbie) en détaillant chaque bouton physique (MENU, MAIN, BROWSE, SAMPLER, SAMPLE EDIT, PAD PERFORM, Q-LINK, TC) et chaque touche tactile. Formate ta réponse en HTML simple (<p>, <h4>, <ol>, <li>, <code>, <strong>).`;
       const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -593,47 +593,47 @@ function applyPromptToSdk(promptText) {
   if (p.includes('sample') || p.includes('wav') || p.includes('violon') || p.includes('piano') || p.includes('rhodes') || p.includes('instrument')) {
     catSel.value = 'instrument';
     dspSel.value = 'sampler';
-    nameInp.value = p.includes('violon') ? 'Arnaud String Rompler' : 'Arnaud Sample Keys';
+    nameInp.value = p.includes('violon') ? 'Itchy String Rompler' : 'Itchy Sample Keys';
     q1.value = 'Cutoff'; q2.value = 'Attack'; q3.value = 'Release'; q4.value = 'Gain';
   } else if (p.includes('fm') || p.includes('dx7') || p.includes('cloche') || p.includes('bell') || p.includes('métallique')) {
     catSel.value = 'instrument';
     dspSel.value = 'fmsynth';
-    nameInp.value = 'Arnaud FM BellSynth';
+    nameInp.value = 'Itchy FM BellSynth';
     q1.value = 'FM Index'; q2.value = 'Ratio'; q3.value = 'Release'; q4.value = 'Gain';
   } else if (p.includes('synth') || p.includes('basse') || p.includes('sub') || p.includes('pad') || p.includes('analog')) {
     catSel.value = 'instrument';
     dspSel.value = 'subsynth';
-    nameInp.value = 'Arnaud Analog Poly';
+    nameInp.value = 'Itchy Analog Poly';
     q1.value = 'Cutoff'; q2.value = 'Attack'; q3.value = 'Release'; q4.value = 'Gain';
   } else if (p.includes('pro-q') || p.includes('proq') || p.includes('égaliseur') || p.includes('eq') || p.includes('mid/side') || p.includes('dynamique')) {
     catSel.value = 'effect';
     dspSel.value = 'proq3';
-    nameInp.value = 'Arnaud ProQ3 DynEQ';
+    nameInp.value = 'Itchy ProQ3 DynEQ';
     applyProQ3Preset();
   } else if (p.includes('delay') || p.includes('dub') || p.includes('echo') || p.includes('écho') || p.includes('ping')) {
     catSel.value = 'effect';
     dspSel.value = 'dubdelay';
-    nameInp.value = 'Arnaud Dub Delay';
+    nameInp.value = 'Itchy Dub Delay';
     q1.value = 'Time ms'; q2.value = 'Feedback'; q3.value = 'Tone'; q4.value = 'Mix';
   } else if (p.includes('chorus') || p.includes('juno') || p.includes('ensemble') || p.includes('stéréo')) {
     catSel.value = 'effect';
     dspSel.value = 'chorus';
-    nameInp.value = 'Arnaud Juno Chorus';
+    nameInp.value = 'Itchy Juno Chorus';
     q1.value = 'Rate'; q2.value = 'Depth'; q3.value = 'Warmth'; q4.value = 'Mix';
   } else if (p.includes('filtre') || p.includes('filter') || p.includes('wah') || p.includes('réson')) {
     catSel.value = 'effect';
     dspSel.value = 'filter';
-    nameInp.value = 'Arnaud Analog Filter';
+    nameInp.value = 'Itchy Analog Filter';
     q1.value = 'Cutoff'; q2.value = 'Resonance'; q3.value = 'Drive'; q4.value = 'LFO Amt';
   } else if (p.includes('comp') || p.includes('punch') || p.includes('bus') || p.includes('glue')) {
     catSel.value = 'effect';
     dspSel.value = 'compressor';
-    nameInp.value = 'Arnaud Bus Punch';
+    nameInp.value = 'Itchy Bus Punch';
     q1.value = 'Threshold'; q2.value = 'Ratio'; q3.value = 'Makeup'; q4.value = 'Mix';
   } else {
     catSel.value = 'effect';
     dspSel.value = 'lofi';
-    nameInp.value = 'Arnaud Vinyl Crusher';
+    nameInp.value = 'Itchy Vinyl Crusher';
     q1.value = 'Drive'; q2.value = 'Crush'; q3.value = 'Tone'; q4.value = 'Mix';
   }
 
@@ -687,7 +687,7 @@ async function initSdkTab() {
       if (id === 'sdkDspTemplate') {
         if (el.value === 'proq3') {
           const nEl = document.getElementById('sdkPluginName');
-          if (nEl) nEl.value = 'Arnaud ProQ3 DynEQ';
+          if (nEl) nEl.value = 'Itchy ProQ3 DynEQ';
           applyProQ3Preset();
           renderQLinkModeUI();
           renderFilmstripGallery();
@@ -1027,8 +1027,8 @@ function makeUid(vendor, name) {
 }
 
 function buildSdkBundle() {
-  const rawName = (document.getElementById('sdkPluginName').value || 'Arnaud Vinyl Crusher').trim();
-  const rawVendor = (document.getElementById('sdkVendorName').value || 'Arnaud Rigogne').trim();
+  const rawName = (document.getElementById('sdkPluginName').value || 'Itchy Vinyl Crusher').trim();
+  const rawVendor = (document.getElementById('sdkVendorName').value || 'Itchy').trim();
   const folderName = rawName.replace(/["#@,;:<>*^|?\\/]/g, '').slice(0, 32);
   const vendor = rawVendor.replace(/["#@,;:<>*^|?\\/]/g, '').slice(0, 32);
   const kind = document.getElementById('sdkPluginCategory').value === 'instrument' ? 'instrument' : 'effect';
@@ -2005,7 +2005,7 @@ const MPC_TEMPLATES = [
   {
     id: 'boombap',
     title: '🥁 Boom-Bap Golden Era (NY 90s)',
-    projectName: 'Arnaud_BoomBap_90BPM',
+    projectName: 'Itchy_BoomBap_90BPM',
     bpm: 90,
     bars: 4,
     swing: '60%',
@@ -2029,7 +2029,7 @@ const MPC_TEMPLATES = [
   {
     id: 'lofi',
     title: '☕ Lo-Fi Jazz & Chillhop',
-    projectName: 'Arnaud_LoFi_Jazz_78BPM',
+    projectName: 'Itchy_LoFi_Jazz_78BPM',
     bpm: 78,
     bars: 4,
     swing: '57%',
@@ -2053,7 +2053,7 @@ const MPC_TEMPLATES = [
   {
     id: 'trap',
     title: '🔥 Trap & Cloud Rap Moderne',
-    projectName: 'Arnaud_Trap_Cloud_140BPM',
+    projectName: 'Itchy_Trap_Cloud_140BPM',
     bpm: 140,
     bars: 8,
     swing: '50%',
@@ -2077,7 +2077,7 @@ const MPC_TEMPLATES = [
   {
     id: 'neosoul',
     title: '🎹 Neo-Soul & R&B Moderne',
-    projectName: 'Arnaud_NeoSoul_86BPM',
+    projectName: 'Itchy_NeoSoul_86BPM',
     bpm: 86,
     bars: 8,
     swing: '59%',
@@ -2101,7 +2101,7 @@ const MPC_TEMPLATES = [
   {
     id: 'synthwave',
     title: '🌆 Synthwave / Outrun 80s',
-    projectName: 'Arnaud_Synthwave_108BPM',
+    projectName: 'Itchy_Synthwave_108BPM',
     bpm: 108,
     bars: 8,
     swing: '50%',
@@ -2125,7 +2125,7 @@ const MPC_TEMPLATES = [
   {
     id: 'afro',
     title: '🌍 Afrobeats & Afro-Swing',
-    projectName: 'Arnaud_Afrobeats_104BPM',
+    projectName: 'Itchy_Afrobeats_104BPM',
     bpm: 104,
     bars: 8,
     swing: '55%',
@@ -2149,7 +2149,7 @@ const MPC_TEMPLATES = [
   {
     id: 'frenchtouch',
     title: '🪩 French Touch / Nu-Disco / House',
-    projectName: 'Arnaud_FrenchTouch_122BPM',
+    projectName: 'Itchy_FrenchTouch_122BPM',
     bpm: 122,
     bars: 8,
     swing: '53%',
@@ -2173,7 +2173,7 @@ const MPC_TEMPLATES = [
   {
     id: 'techno',
     title: '⚡ Dark Techno / Cyberpunk',
-    projectName: 'Arnaud_DarkTechno_132BPM',
+    projectName: 'Itchy_DarkTechno_132BPM',
     bpm: 132,
     bars: 4,
     swing: '50%',
@@ -2196,7 +2196,7 @@ const MPC_TEMPLATES = [
   {
     id: 'westcoast',
     title: '🌴 West Coast / G-Funk',
-    projectName: 'Arnaud_WestCoast_96BPM',
+    projectName: 'Itchy_WestCoast_96BPM',
     bpm: 96,
     bars: 4,
     swing: '56%',

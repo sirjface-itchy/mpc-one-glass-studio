@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MPC ONE // GLASS STUDIO 3.10.1 — Arnaud Rigogne</title>
+  <title>MPC ONE // GLASS STUDIO 3.10.1 — Itchy</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -25,7 +25,7 @@
         <div class="akai-badge">AKAI PRO // MPC ONE</div>
         <div class="title-block">
           <h1>MPC BIBLE <span class="accent-gradient">GLASS STUDIO</span></h1>
-          <span class="subtitle">OS 3.10.1 STANDALONE • SERIAL: (21)A12201241842841 • ARNAUD RIGOGNE</span>
+          <span class="subtitle">OS 3.10.1 STANDALONE • SERIAL: (21)A12201241842841 • ITCHY</span>
         </div>
       </div>
 
@@ -439,11 +439,11 @@
                 <div class="form-row">
                   <div class="form-group">
                     <label>Nom de ton Plugin (max 32 car.)</label>
-                    <input type="text" id="sdkPluginName" value="Arnaud Vinyl Crusher" maxlength="32" />
+                    <input type="text" id="sdkPluginName" value="Itchy Vinyl Crusher" maxlength="32" />
                   </div>
                   <div class="form-group">
                     <label>Créateur / Marque (Manufacturer)</label>
-                    <input type="text" id="sdkVendorName" value="Arnaud Rigogne" maxlength="32" />
+                    <input type="text" id="sdkVendorName" value="Itchy" maxlength="32" />
                   </div>
                 </div>
                 <div class="form-row">
@@ -613,7 +613,7 @@
                   <div class="mpc-custom-skin" id="sdkSkinPreview">
                     <div class="skin-top-bar">
                       <span class="skin-badge" id="previewBadge">CUSTOM EFFECT // ARM32+ARM64</span>
-                      <span class="skin-title" id="previewTitle">Arnaud Rigogne — Arnaud Vinyl Crusher</span>
+                      <span class="skin-title" id="previewTitle">Itchy — Itchy Vinyl Crusher</span>
                       <span class="skin-cpu">GLIBC 2.27 OK</span>
                     </div>
                     <div class="skin-knobs-row" id="sdkPreviewKnobsGrid">
@@ -691,7 +691,7 @@
               <div class="form-row-2">
                 <div class="form-group">
                   <label>Nom du Projet (<code>.xpj</code>) :</label>
-                  <input type="text" id="tplProjectName" value="Arnaud_BoomBap_90BPM" />
+                  <input type="text" id="tplProjectName" value="Itchy_BoomBap_90BPM" />
                 </div>
                 <div class="form-group">
                   <label>Tempo (BPM) :</label>
@@ -754,18 +754,33 @@
               </div>
               <span class="badge-live">100% NAVIGATEUR</span>
             </div>
-            <div class="form-group">
-              <label>Choisis un fichier audio (<code>.wav</code>, <code>.mp3</code>, <code>.aiff</code>, <code>.m4a</code>) :</label>
-              <input type="file" id="prepAudioInput" accept="audio/*" />
-            </div>
+            <label class="file-dropzone" id="prepDropzone" for="prepAudioInput">
+              <span>📂 <strong>Clique ici ou Glisse-Dépose ton fichier audio</strong> (<code>.wav</code>, <code>.mp3</code>, <code>.aiff</code>, <code>.m4a</code>)</span>
+              <input type="file" id="prepAudioInput" accept="audio/*,.wav,.mp3,.m4a,.aiff" />
+            </label>
             <div class="form-row-2">
               <label class="check-pill"><input type="checkbox" id="prepTrimSilence" checked /> Couper le silence au début/fin</label>
               <label class="check-pill"><input type="checkbox" id="prepNormalize" checked /> Normaliser (-0.5 dB)</label>
             </div>
+            <div class="form-row-2" style="margin-top:4px;">
+              <div class="form-group">
+                <label>🎵 Note exacte détectée :</label>
+                <input type="text" id="prepDetectedNote" placeholder="Ex: C3, F#2..." />
+              </div>
+              <div class="form-group">
+                <label>⏱️ BPM détecté :</label>
+                <input type="number" id="prepDetectedBpm" placeholder="Ex: 90" min="40" max="240" />
+              </div>
+            </div>
+            <label class="check-pill" style="margin-top:4px;">
+              <input type="checkbox" id="prepAutoTagName" checked />
+              🏷️ Inclure automatiquement la <strong>Note</strong> et le <strong>BPM</strong> dans le nom du fichier exporté (ex. <code>Sample_C3_90BPM_Itchy.wav</code>)
+            </label>
             <div id="prepAudioInfo" class="sdk-wav-status" style="margin:8px 0;">En attente d'un fichier audio...</div>
             <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:8px;">
               <button class="btn-secondary-glass" id="prepPlayBtn" disabled>▶️ Écouter</button>
               <button class="btn-primary" id="prepExportBtn" disabled>⬇️ Télécharger .WAV prêt pour MPC One</button>
+              <button class="btn-secondary-glass" id="prepApplyToXpjBtn" disabled>🎯 Appliquer Note &amp; BPM au Template .xpj</button>
             </div>
             <details class="newbie-accordion" open>
               <summary>📖 Guide Newbie : Où mettre ce .wav sur ta MPC One ?</summary>
@@ -787,16 +802,14 @@
               </div>
               <span class="badge-live">FORMAT NATIF .XPM</span>
             </div>
-            <div class="form-row-2">
-              <div class="form-group">
-                <label>Nom de l'Instrument Keygroup :</label>
-                <input type="text" id="kgName" value="Arnaud_Custom_Keys" />
-              </div>
-              <div class="form-group">
-                <label>Fichiers <code>.wav</code> (1 à 12 notes) :</label>
-                <input type="file" id="kgFilesInput" accept=".wav,audio/wav" multiple />
-              </div>
+            <div class="form-group">
+              <label>Nom de l'Instrument Keygroup :</label>
+              <input type="text" id="kgName" value="Itchy_Custom_Keys" />
             </div>
+            <label class="file-dropzone" id="kgDropzone" for="kgFilesInput">
+              <span>📂 <strong>Clique ici ou Glisse-Dépose tes fichiers <code>.wav</code></strong> (1 à 12 notes — détection auto de la tonalité audio !)</span>
+              <input type="file" id="kgFilesInput" accept=".wav,audio/wav,audio/*" multiple />
+            </label>
             <div id="kgZonesPreview" class="sdk-wav-status" style="margin:6px 0;">Astuce : nomme tes fichiers avec la note (ex: <code>C2</code>, <code>F#3</code>, <code>A4</code>) pour un mapping automatique !</div>
             <button class="btn-primary" id="kgBuildZipBtn" style="margin-top:8px;">📦 Générer le Keygroup (.xpm + .wav en .zip)</button>
             <details class="newbie-accordion" open>

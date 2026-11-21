@@ -138,9 +138,9 @@ const server = http.createServer(async (req, res) => {
     req.on('end', async () => {
       try {
         const payload = JSON.parse(body);
-        const folderName = (payload.folderName || 'Arnaud Vinyl Crusher').replace(/["#@,;:<>*^|?\\/]/g, '').trim();
-        const vendor = (payload.vendor || 'Arnaud Rigogne').replace(/["#@,;:<>*^|?\\/]/g, '').trim();
-        const className = payload.className || 'ArnaudVinylCrusher';
+        const folderName = (payload.folderName || 'Itchy Vinyl Crusher').replace(/["#@,;:<>*^|?\\/]/g, '').trim();
+        const vendor = (payload.vendor || 'Itchy').replace(/["#@,;:<>*^|?\\/]/g, '').trim();
+        const className = payload.className || 'ItchyVinylCrusher';
         const pluginDir = path.join(SDK_ROOT, 'plugins', folderName);
         const srcDir = path.join(pluginDir, 'src');
 
@@ -662,7 +662,7 @@ const server = http.createServer(async (req, res) => {
         if (apiKey) {
           try {
             const contextStr = JSON.stringify({ kbMatch: bestKb, arsenalMatches: arsenalMatches.slice(0, 4), webResults });
-            const prompt = `Tu es l'expert MPC One (OS 3.10.1) d'Arnaud Rigogne. Réponds EN FRANÇAIS, façon pas-à-pas débutant (Newbie) avec les boutons physiques exacts (MENU, MAIN, BROWSE, XL Channel Strip, Q-LINK, SAMPLE EDIT, PAD PERFORM). Question: "${question}". Contexte RAG + Web Live: ${contextStr}. Formate en HTML simple (<h4>, <p>, <ol>, <li>, <code>, <strong>).`;
+            const prompt = `Tu es l'expert MPC One (OS 3.10.1) d'Itchy. Réponds EN FRANÇAIS, façon pas-à-pas débutant (Newbie) avec les boutons physiques exacts (MENU, MAIN, BROWSE, XL Channel Strip, Q-LINK, SAMPLE EDIT, PAD PERFORM). Question: "${question}". Contexte RAG + Web Live: ${contextStr}. Formate en HTML simple (<h4>, <p>, <ol>, <li>, <code>, <strong>).`;
             const gResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },

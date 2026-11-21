@@ -287,14 +287,108 @@ function encodeWav16(channels, sampleRate) {
   return new Uint8Array(buf);
 }
 
+const NOTE_NAMES_SHARP = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
+function midiToNoteName(midi) {
+  const m = Math.max(0, Math.min(127, Math.round(midi)));
+  const oct = Math.floor(m / 12) - 2; // MPC convention: 60 = C3
+  return `${NOTE_NAMES_SHARP[m % 12]}${oct}`;
+}
+
+function detectPitchNote(samples, sampleRate) {
+  const winSize = 4096;
+  if (!samples || samples.length < winSize) return null;
+  // Find loudest steady segment in first half of sample
+  let bestStart = 0, bestEnergy = 0;
+  const maxScan = Math.min(samples.length - winSize, sampleRate * 4);
+  for (let s = 0; s <= maxScan; s += 1024) {
+    let e = 0;
+    for (let i = 0; i < winSize; i += 4) e += samples[s + i] * samples[s + i];
+    if (e > bestEnergy) { bestEnergy = e; bestStart = s; }
+  }
+  if (bestEnergy < 1e-4) return null;
+
+  const minLag = Math.max(20, Math.floor(sampleRate / 1800));
+  const maxLag = Math.min(Math.floor(winSize / 2), Math.floor(sampleRate / 55));
+  let bestLag = -1, bestCorr = 0;
+  for (let lag = minLag; lag <= maxLag; lag++) {
+    let sum = 0, e1 = 0, e2 = 0;
+    for (let i = 0; i < winSize - lag; i += 2) {
+      const a = samples[bestStart + i];
+      const b = samples[bestStart + i + lag];
+      sum += a * b;
+      e1 += a * a;
+      e2 += b * b;
+    }
+    const corr = sum / (Math.sqrt(e1 * e2) + 1e-9);
+    if (corr > bestCorr) { bestCorr = corr; bestLag = lag; }
+  }
+  if (bestLag < 0 || bestCorr < 0.35) return null;
+  const freqHz = sampleRate / bestLag;
+  const midiFloat = 69 + 12 * Math.log2(freqHz / 440);
+  const midi = Math.round(midiFloat);
+  const cents = Math.round((midiFloat - midi) * 100);
+  return { midi, noteName: midiToNoteName(midi), freqHz: Math.round(freqHz * 10) / 10, cents, confidence: Math.round(bestCorr * 100) };
+}
+
+function detectSampleBpm(samples, sampleRate, durationSec) {
+  if (!samples || durationSec < 0.8) return null;
+  // Short-time energy envelope at ~100 Hz
+  const hop = Math.floor(sampleRate / 100);
+  const nFrames = Math.min(2000, Math.floor(samples.length / hop));
+  if (nFrames < 80) {
+    const est = Math.round(240 / durationSec);
+    return (est >= 65 && est <= 175) ? est : null;
+  }
+  const env = new Float32Array(nFrames);
+  for (let i = 0; i < nFrames; i++) {
+    let e = 0;
+    const base = i * hop;
+    for (let j = 0; j < hop; j += 4) e += Math.abs(samples[base + j] || 0);
+    env[i] = e / (hop / 4);
+  }
+  // Onset flux (positive diff)
+  const flux = new Float32Array(nFrames);
+  for (let i = 1; i < nFrames; i++) flux[i] = Math.max(0, env[i] - env[i - 1]);
+
+  let bestBpm = null, bestScore = 0;
+  for (let bpm = 70; bpm <= 170; bpm++) {
+    const lag = Math.round((60 / bpm) * 100);
+    let score = 0;
+    for (let i = 0; i < nFrames - lag; i++) score += flux[i] * flux[i + lag];
+    if (score > bestScore) { bestScore = score; bestBpm = bpm; }
+  }
+  if (bestScore > 0.0001 && bestBpm) return bestBpm;
+  const est = Math.round(240 / durationSec);
+  return (est >= 65 && est <= 175) ? est : null;
+}
+
 function parseNoteFromFilename(name) {
-  const m = name.match(/([A-G])([#b]?)(-?[0-8])/i);
-  if (!m) return 60;
+  const m = name.match(/(?:^|[^a-zA-Z])([A-G])([#b]?)(-?[0-8])(?:$|[^a-zA-Z0-9])/i);
+  if (!m) return null;
   const base = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 }[m[1].toUpperCase()];
   const acc = m[2] === '#' ? 1 : (m[2].toLowerCase() === 'b' ? -1 : 0);
   const oct = parseInt(m[3], 10);
-  // MPC convention: C3 = 60 -> (oct + 2) * 12
   return Math.max(0, Math.min(127, (oct + 2) * 12 + base + acc));
+}
+
+function wireDropzone(dropEl, inputEl, onFiles) {
+  if (!dropEl || !inputEl) return;
+  ['dragenter', 'dragover'].forEach(ev => dropEl.addEventListener(ev, e => {
+    e.preventDefault();
+    dropEl.classList.add('dragover');
+  }));
+  ['dragleave', 'drop'].forEach(ev => dropEl.addEventListener(ev, e => {
+    e.preventDefault();
+    dropEl.classList.remove('dragover');
+  }));
+  dropEl.addEventListener('drop', e => {
+    const files = e.dataTransfer?.files;
+    if (files && files.length) onFiles(files);
+  });
+  inputEl.addEventListener('change', e => {
+    if (e.target.files && e.target.files.length) onFiles(e.target.files);
+  });
 }
 
 function escapeXml(s) {
@@ -308,9 +402,14 @@ export function initStudioTab() {
   let audioCtx = null;
 
   const prepInput = document.getElementById('prepAudioInput');
+  const prepDropzone = document.getElementById('prepDropzone');
   const prepInfo = document.getElementById('prepAudioInfo');
   const prepPlayBtn = document.getElementById('prepPlayBtn');
   const prepExportBtn = document.getElementById('prepExportBtn');
+  const prepApplyToXpjBtn = document.getElementById('prepApplyToXpjBtn');
+  const prepNoteInp = document.getElementById('prepDetectedNote');
+  const prepBpmInp = document.getElementById('prepDetectedBpm');
+  let originalBaseName = 'Sample';
 
   function getProcessedChannels() {
     if (!decodedAudio) return null;
@@ -356,25 +455,34 @@ export function initStudioTab() {
     return { channels: chs, sampleRate: sr };
   }
 
-  prepInput?.addEventListener('change', async (e) => {
-    const file = e.target.files?.[0];
+  async function handlePrepFiles(fileList) {
+    const file = fileList?.[0];
     if (!file) return;
-    originalFileName = file.name.replace(/\.[^.]+$/, '') + '_MPC.wav';
-    prepInfo.textContent = '⏳ Décodage et analyse audio en cours...';
+    originalBaseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-zA-Z0-9 _-]/g, '').trim() || 'Sample';
+    prepInfo.textContent = '⏳ Décodage + détection tonalité (note) & BPM en cours...';
     try {
       audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
       const arr = await file.arrayBuffer();
       decodedAudio = await audioCtx.decodeAudioData(arr);
+      const ch0 = decodedAudio.getChannelData(0);
       const dur = decodedAudio.duration.toFixed(2);
-      const estBars4 = Math.round((240 / decodedAudio.duration) * 10) / 10;
-      const bpmHint = (estBars4 >= 60 && estBars4 <= 180) ? ` • BPM estimé (si boucle 4 temps) ≈ ${estBars4}` : '';
-      prepInfo.textContent = `✅ Prêt : ${file.name} (${dur}s, ${decodedAudio.sampleRate}Hz → 44100Hz, ${decodedAudio.numberOfChannels} ch)${bpmHint}`;
+      const pitch = detectPitchNote(ch0, decodedAudio.sampleRate);
+      const bpm = detectSampleBpm(ch0, decodedAudio.sampleRate, decodedAudio.duration);
+
+      if (prepNoteInp) prepNoteInp.value = pitch ? pitch.noteName : '';
+      if (prepBpmInp) prepBpmInp.value = bpm ? String(bpm) : '';
+
+      const pitchStr = pitch ? ` • 🎵 Note : ${pitch.noteName} (${pitch.freqHz} Hz)` : ' • Note non tonale (percussion)';
+      const bpmStr = bpm ? ` • ⏱️ BPM ≈ ${bpm}` : '';
+      prepInfo.textContent = `✅ Prêt : ${file.name} (${dur}s, ${decodedAudio.sampleRate}Hz → 44100Hz)${pitchStr}${bpmStr}`;
       prepPlayBtn.disabled = false;
       prepExportBtn.disabled = false;
+      if (prepApplyToXpjBtn) prepApplyToXpjBtn.disabled = false;
     } catch (err) {
       prepInfo.textContent = `❌ Erreur de décodage : ${err.message}`;
     }
-  });
+  }
+  wireDropzone(prepDropzone, prepInput, handlePrepFiles);
 
   prepPlayBtn?.addEventListener('click', () => {
     const proc = getProcessedChannels();
@@ -392,37 +500,76 @@ export function initStudioTab() {
     const proc = getProcessedChannels();
     if (!proc) return;
     const wavBytes = encodeWav16(proc.channels, proc.sampleRate);
+    const autoTag = document.getElementById('prepAutoTagName')?.checked !== false;
+    const noteTag = (prepNoteInp?.value || '').trim().replace(/[^A-Ga-g#b0-9]/g, '');
+    const bpmTag = (prepBpmInp?.value || '').trim().replace(/[^0-9]/g, '');
+    let outName = originalBaseName;
+    if (autoTag) {
+      if (noteTag) outName += `_${noteTag}`;
+      if (bpmTag) outName += `_${bpmTag}BPM`;
+    }
+    outName += '_Itchy.wav';
     const a = document.createElement('a');
     a.href = URL.createObjectURL(new Blob([wavBytes], { type: 'audio/wav' }));
-    a.download = originalFileName;
+    a.download = outName;
     a.click();
   });
 
-  // 2. Keygroup (.xpm) Multi-Notes Generator
+  prepApplyToXpjBtn?.addEventListener('click', () => {
+    const noteTag = (prepNoteInp?.value || '').trim().replace(/[^A-Ga-g#b0-9]/g, '');
+    const bpmTag = (prepBpmInp?.value || '').trim().replace(/[^0-9]/g, '');
+    const tplNameEl = document.getElementById('tplProjectName');
+    const tplBpmEl = document.getElementById('tplBpm');
+    if (bpmTag && tplBpmEl) tplBpmEl.value = bpmTag;
+    if (tplNameEl) {
+      let base = `Itchy_${originalBaseName.slice(0, 18)}`;
+      if (noteTag) base += `_${noteTag}`;
+      if (bpmTag) base += `_${bpmTag}BPM`;
+      tplNameEl.value = base;
+    }
+    document.querySelector('.nav-tab[data-tab="templates"]')?.click();
+  });
+
+  // 2. Keygroup (.xpm) Multi-Notes Generator (with automatic Audio Pitch Detection!)
   let kgFiles = [];
   const kgInput = document.getElementById('kgFilesInput');
+  const kgDropzone = document.getElementById('kgDropzone');
   const kgPreview = document.getElementById('kgZonesPreview');
 
-  kgInput?.addEventListener('change', (e) => {
-    kgFiles = Array.from(e.target.files || []).slice(0, 12).map(f => ({
-      file: f,
-      rootNote: parseNoteFromFilename(f.name)
-    })).sort((a, b) => a.rootNote - b.rootNote);
-
-    if (!kgFiles.length) return;
+  async function handleKgFiles(fileList) {
+    const files = Array.from(fileList || []).slice(0, 12);
+    if (!files.length) return;
+    kgPreview.textContent = '⏳ Analyse de la note exacte de chaque sample...';
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const mapped = [];
+    for (const f of files) {
+      let rootNote = parseNoteFromFilename(f.name);
+      let sourceTag = 'nom';
+      if (rootNote === null) {
+        try {
+          const decoded = await audioCtx.decodeAudioData(await f.arrayBuffer());
+          const pitch = detectPitchNote(decoded.getChannelData(0), decoded.sampleRate);
+          if (pitch) { rootNote = pitch.midi; sourceTag = `audio ${pitch.freqHz}Hz`; }
+        } catch (_) {}
+      }
+      if (rootNote === null) { rootNote = 60; sourceTag = 'défaut C3'; }
+      mapped.push({ file: f, rootNote, sourceTag });
+    }
+    kgFiles = mapped.sort((a, b) => a.rootNote - b.rootNote);
     kgPreview.innerHTML = kgFiles.map((item, idx) => {
       const low = idx === 0 ? 0 : Math.floor((kgFiles[idx - 1].rootNote + item.rootNote) / 2) + 1;
       const high = idx === kgFiles.length - 1 ? 127 : Math.floor((item.rootNote + kgFiles[idx + 1].rootNote) / 2);
-      return `Zone ${idx + 1}: <code>${item.file.name}</code> (Root MIDI ${item.rootNote} → Notes ${low}..${high})`;
+      return `Zone ${idx + 1}: <code>${item.file.name}</code> → <strong>${midiToNoteName(item.rootNote)}</strong> (MIDI ${item.rootNote}, ${item.sourceTag}) • Plage ${low}..${high}`;
     }).join('<br/>');
-  });
+  }
+  wireDropzone(kgDropzone, kgInput, handleKgFiles);
 
   document.getElementById('kgBuildZipBtn')?.addEventListener('click', async () => {
     if (!kgFiles.length) {
       kgPreview.textContent = '⚠️ Sélectionne au moins 1 fichier .wav d\'abord !';
       return;
     }
-    const kgName = (document.getElementById('kgName')?.value || 'Arnaud_Custom_Keys').replace(/[^a-zA-Z0-9 _-]/g, '').trim() || 'Arnaud_Custom_Keys';
+    const kgName = (document.getElementById('kgName')?.value || 'Itchy_Custom_Keys').replace(/[^a-zA-Z0-9 _-]/g, '').trim() || 'Itchy_Custom_Keys';
     const instrumentsXml = kgFiles.map((item, idx) => {
       const low = idx === 0 ? 0 : Math.floor((kgFiles[idx - 1].rootNote + item.rootNote) / 2) + 1;
       const high = idx === kgFiles.length - 1 ? 127 : Math.floor((item.rootNote + kgFiles[idx + 1].rootNote) / 2);
