@@ -508,6 +508,145 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Hybrid Copilot: Local RAG KB + Arsenal + Live Online Web Confirmation + Optional Gemini
+  if (url.pathname === '/api/ask-copilot' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const payload = JSON.parse(body || '{}');
+        const question = (payload.question || '').trim();
+        if (!question) throw new Error('Question vide');
+        const lower = question.toLowerCase();
+
+        // 1. Search Local RAG KB
+        let kbList = [];
+        try {
+          kbList = JSON.parse(fs.readFileSync(path.join(DATA_DIR, 'mpc_rag_kb.json'), 'utf8'));
+        } catch (_) {}
+
+        let bestKb = null;
+        let bestScore = 0;
+        const tokens = lower.split(/[^a-z0-9àâéèêëîïôùûüç]+/).filter(t => t.length >= 3);
+        for (const item of kbList) {
+          let score = 0;
+          for (const kw of item.keywords || []) {
+            if (lower.includes(kw.toLowerCase())) score += 10;
+          }
+          const hay = `${item.title} ${item.summary} ${(item.steps || []).join(' ')}`.toLowerCase();
+          for (const tok of tokens) {
+            if (hay.includes(tok)) score += 2;
+          }
+          if (score > bestScore) {
+            bestScore = score;
+            bestKb = item;
+          }
+        }
+        if (bestScore < 6) bestKb = null;
+
+        // 2. Search inMusic Arsenal
+        const arsenal = loadArsenal();
+        const arsenalMatches = [];
+        const allItems = [
+          ...(arsenal.software_and_plugins?.standalone_instruments || []),
+          ...(arsenal.software_and_plugins?.standalone_effects_and_packs || []),
+          ...(arsenal.software_and_plugins?.expansions || [])
+        ];
+        for (const it of allItems) {
+          const text = `${it.name || ''} ${it.style || ''} ${(it.includes || []).join(' ')} ${it.genre || ''}`.toLowerCase();
+          if (tokens.some(t => t.length >= 4 && text.includes(t))) {
+            arsenalMatches.push(it);
+          }
+        }
+
+        // 3. Live Online Web Confirmation (DuckDuckGo HTML)
+        let webResults = [];
+        try {
+          const searchQ = encodeURIComponent(`Akai MPC ${question}`);
+          const ddgResp = await fetch(`https://html.duckduckgo.com/html/?q=${searchQ}`, {
+            headers: { 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)' },
+            signal: AbortSignal.timeout(4500)
+          });
+          const html = await ddgResp.text();
+          const blocks = html.split('class="result__body"').slice(1, 5);
+          for (const b of blocks) {
+            const titleM = b.match(/class="result__a"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/);
+            const snipM = b.match(/class="result__snippet"[^>]*>([\s\S]*?)<\/a>/);
+            if (titleM) {
+              let href = titleM[1].replace(/&amp;/g, '&');
+              const uddg = href.match(/uddg=([^&]+)/);
+              if (uddg) href = decodeURIComponent(uddg[1]);
+              const clean = s => s.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+              webResults.push({
+                title: clean(titleM[2]),
+                snippet: snipM ? clean(snipM[1]) : '',
+                url: href
+              });
+            }
+          }
+        } catch (_) {}
+
+        // 4. Optional Gemini synthesis if API key present
+        const apiKey = (payload.geminiApiKey || process.env.GEMINI_API_KEY || '').trim();
+        if (apiKey) {
+          try {
+            const contextStr = JSON.stringify({ kbMatch: bestKb, arsenalMatches: arsenalMatches.slice(0, 4), webResults });
+            const prompt = `Tu es l'expert MPC One (OS 3.10.1) d'Arnaud Rigogne. Réponds EN FRANÇAIS, façon pas-à-pas débutant (Newbie) avec les boutons physiques exacts (MENU, MAIN, BROWSE, XL Channel Strip, Q-LINK, SAMPLE EDIT, PAD PERFORM). Question: "${question}". Contexte RAG + Web Live: ${contextStr}. Formate en HTML simple (<h4>, <p>, <ol>, <li>, <code>, <strong>).`;
+            const gResp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ contents: [{ role: 'user', parts: [{ text: prompt }] }] })
+            });
+            const gData = await gResp.json();
+            const gText = gData?.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (gText) {
+              res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+              res.end(JSON.stringify({ ok: true, html: gText.replace(/^```html\s*/i, '').replace(/```$/, ''), webResults }));
+              return;
+            }
+          } catch (_) {}
+        }
+
+        // 5. Structured on-topic response (RAG KB + Arsenal + Live Web Confirmation)
+        let html = '';
+        if (bestKb) {
+          html += `<h4>🎯 ${bestKb.title}</h4><p>${bestKb.summary}</p>`;
+          if (bestKb.steps?.length) {
+            html += `<ol>${bestKb.steps.map(s => `<li>${s}</li>`).join('')}</ol>`;
+          }
+          if (bestKb.tip) {
+            html += `<div class="chat-newbie-box">💡 <strong>Astuce MPC One :</strong> ${bestKb.tip}</div>`;
+          }
+        } else if (arsenalMatches.length) {
+          const m = arsenalMatches[0];
+          html += `<h4>🎛️ ${m.name} (${m.vendor || 'inMusic'})</h4><p>${m.style || m.genre || ''} — Disponible sur ta MPC One via <code>MAIN → XL Channel Strip / Plugin</code>.</p>`;
+        } else {
+          html += `<h4>🔎 Recherche ciblée pour : « ${question.replace(/[<>&]/g, '')} »</h4>`;
+        }
+
+        if (webResults.length) {
+          html += `<div style="margin-top:10px; padding:10px; border-radius:10px; background:rgba(0,229,255,0.06); border:1px solid rgba(0,229,255,0.22);">
+            <strong>🌐 Confirmation & compléments en ligne :</strong>
+            <ul style="margin-top:6px;">
+              ${webResults.map(w => `<li><a href="${w.url}" target="_blank" style="color:var(--cyan);">${w.title}</a>${w.snippet ? ` — <span style="color:#cbd5e1;">${w.snippet}</span>` : ''}</li>`).join('')}
+            </ul>
+          </div>`;
+        }
+
+        html += `<div style="margin-top:8px; font-size:0.76rem; color:var(--text-muted);">
+          📓 <a href="https://notebook.google.com/notebook/3e52a249-f8e4-4f72-bf57-377c8d245a9e" target="_blank" style="color:var(--cyan);">Interroger aussi directement tes 84 sources dans NotebookLM</a> (copie ta question dans le chat NotebookLM pour une synthèse multi-vidéos).
+        </div>`;
+
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ ok: true, html, webResults }));
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json; charset=utf-8' });
+        res.end(JSON.stringify({ ok: false, error: err.message }));
+      }
+    });
+    return;
+  }
+
   // Scan existing .xpj projects on SD Save / Workspace
   if (url.pathname === '/api/projects' && req.method === 'GET') {
     const scanDirs = [

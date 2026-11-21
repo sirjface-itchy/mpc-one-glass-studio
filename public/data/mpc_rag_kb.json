@@ -1,0 +1,82 @@
+[
+  {
+    "id": "air-transient",
+    "keywords": ["transient", "air transient", "attaque", "sustain", "punch", "kick", "snare", "claque"],
+    "title": "Utiliser AIR Transient sur ta MPC One (OS 3.10.1)",
+    "summary": "AIR Transient est un shaper de transitoires intégré qui permet d'accentuer ou d'adoucir l'attaque (le 'claquement') et le sustain (la résonance/queue) d'un kick, d'une caisse claire, d'un bus batterie ou d'un sample.",
+    "steps": [
+      "Appuie sur <code>MAIN</code> et sélectionne ta piste <strong>Drums</strong> (ou un Pad précis dans <strong>Pad Mixer</strong> si tu ne veux traiter que le Kick ou la Snare).",
+      "Ouvre le <strong>XL Channel Strip</strong> sur le bord gauche de l'écran tactile → touche un slot <strong>Insert (+)</strong> → choisis <code>Dynamics → AIR Transient</code>.",
+      "Touche l'icône de crayon/édition sur le slot pour ouvrir l'interface tactile de <strong>AIR Transient</strong>.",
+      "<strong>Attack (%) :</strong> monte entre <code>+15%</code> et <code>+40%</code> pour faire claquer un Kick ou une Snare Boom-Bap ; baisse en négatif (<code>-20%</code>) pour adoucir un hi-hat trop agressif ou un sample qui pique.",
+      "<strong>Sustain (%) :</strong> baisse en négatif (<code>-15%</code> à <code>-40%</code>) pour raccourcir une caisse claire ou enlever l'écho/room d'une boucle de batterie ; monte en positif pour allonger le corps d'un Kick.",
+      "<strong>Release / Sensitivity & Output :</strong> ajuste le <em>Output</em> pour garder le même volume avant/après (et combine-le avec <code>AIR Soft Clipper</code> juste après en Insert 2 pour éviter tout écrêtage !)."
+    ],
+    "tip": "Sur MPC One, utilise le bouton physique Q-LINK en mode Screen pour contrôler Attack et Sustain au doigt pendant que ta boucle tourne !"
+  },
+  {
+    "id": "mother-ducker",
+    "keywords": ["mother ducker", "sidechain", "ducker", "pompage", "pump", "kick bass", "sub"],
+    "title": "Faire un Sidechain (Pompage Kick/Basse) avec Mother Ducker",
+    "summary": "Mother Ducker permet de baisser automatiquement le volume de ta basse ou de tes accords à chaque coup de Kick pour éviter que le grave ne s'étouffe.",
+    "steps": [
+      "Sur ta piste <strong>Drums</strong> (ou sur le Pad Kick uniquement dans <em>Pad Mixer</em>), ouvre le <strong>XL Channel Strip</strong> → Insert 1 → charge <code>Dynamics → Mother Ducker Input</code>.",
+      "Va ensuite sur ta piste <strong>Basse (AIR Sub Factory)</strong> ou <strong>Sample</strong> → Insert → charge <code>Dynamics → Mother Ducker</code>.",
+      "Ouvre <strong>Mother Ducker</strong> sur la piste Basse et vérifie que <strong>Source</strong> correspond au même numéro de bus (ex. <code>Bus 1</code> par défaut).",
+      "Baisse <strong>Threshold</strong> vers <code>-20 dB</code> à <code>-30 dB</code> et monte <strong>Ratio</strong> vers <code>4:1</code> jusqu'à voir l'indicateur de réduction bouger à chaque coup de Kick.",
+      "Ajuste <strong>Release</strong> (<code>60–140 ms</code>) pour caler le retour de la basse sur le groove de ton morceau."
+    ],
+    "tip": "Pour du Boom-Bap léger, vise 2 à 4 dB de réduction ; pour de la French Touch / House, pousse à 8–12 dB !"
+  },
+  {
+    "id": "air-flavor-pro",
+    "keywords": ["flavor pro", "air flavor", "vinyl", "cassette", "flutter", "wow", "radio", "lo-fi"],
+    "title": "Utiliser AIR Flavor Pro pour le grain Vinyle & Cassette",
+    "summary": "AIR Flavor Pro (dans ton compte inMusic) regroupe 6 modules Lo-Fi : EQ/Radio, Distortion/Saturation, Digital/Bitcrush, Flutter/Wow, Vinyl Noise et Magnetic Tape.",
+    "steps": [
+      "Sur ta piste Sample ou Master, ouvre le <strong>XL Channel Strip</strong> → Insert → <code>Harmonic / Vintage → AIR Flavor Pro</code>.",
+      "Active le module <strong>Flutter</strong> (légèrement, <code>10–25%</code>) pour le flottement de bande analogique.",
+      "Active <strong>Distortion</strong> en mode <em>Tube</em> ou <em>Tape</em> pour réchauffer les médiums.",
+      "Active <strong>Vinyl</strong> ou <strong>Noise</strong> si tu veux un léger crépitement vinyle en arrière-plan (pense à baisser <em>Level</em> pour ne pas qu'il soit trop fort).",
+      "Utilise le filtre <strong>Radio / EQ</strong> intégré pour couper les extrêmes et donner un côté vieux disque samplé."
+    ],
+    "tip": "Combine AIR Flavor Pro sur tes samples avec MSXII Lo-Fly Dirt sur tes drums pour un rendu Boom-Bap ultra organique."
+  },
+  {
+    "id": "super-warp",
+    "keywords": ["super warp", "warp", "tempo", "time stretch", "caler", "bpm", "repitch"],
+    "title": "Caler un sample au tempo avec Super Warp (MPC Pro Pack)",
+    "summary": "Super Warp (inclus dans ton MPC Pro Pack) offre un algorithme de time-stretching haute fidélité sans artefacts métalliques.",
+    "steps": [
+      "Appuie sur <code>SAMPLE EDIT</code> et sélectionne ton sample.",
+      "En bas de l'écran, vérifie que la durée en <strong>Beats</strong> (ex. 4, 8 ou 16 temps) correspond à ta boucle.",
+      "Appuie sur <code>PROGRAM EDIT</code> (ou l'onglet <strong>Warp</strong> dans <code>MAIN / Sample</code>) et coche <strong>Warp</strong>.",
+      "Dans le menu <strong>Algorithm</strong>, choisis <strong>Super Warp</strong> (ou <em>Repitch</em> si tu veux le son vinyle classique qui change de pitch avec le tempo)."
+    ],
+    "tip": "Super Warp est idéal pour des boucles polyphoniques (pianos, guitares, voix) sans dénaturer les transitoires."
+  },
+  {
+    "id": "air-soft-clipper",
+    "keywords": ["soft clipper", "clipper", "loudness", "écrêter", "master", "claque"],
+    "title": "Donner du punch sans saturer avec AIR Soft Clipper",
+    "summary": "AIR Soft Clipper rabote proprement les crêtes trop pointues pour gagner en volume perçu sur le Drum Bus ou le Master.",
+    "steps": [
+      "Sur ta piste <strong>Drums</strong> ou sur le <strong>Master</strong> (Submix/Out), place <code>Dynamics → AIR Soft Clipper</code> en dernier slot d'Insert.",
+      "Monte <strong>Drive / Input Gain</strong> de <code>+2</code> à <code>+6 dB</code> jusqu'à sentir le Kick et la Snare gagner en épaisseur.",
+      "Baisse légèrement <strong>Output</strong> à <code>-0.5 dB</code> ou <code>-1.0 dB</code> pour protéger ta sortie."
+    ],
+    "tip": "Place AIR Soft Clipper APRÈS AIR Transient pour encaisser les pics d'attaque sans faire clignoter le rouge !"
+  },
+  {
+    "id": "flex-beat",
+    "keywords": ["flex beat", "tape stop", "stutter", "half speed", "gross beat"],
+    "title": "Faire des Tape-Stops et Stutters avec Akai Flex Beat",
+    "summary": "Akai Flex Beat manipule le temps et le pitch en direct (freinages vinyle, half-speed, stutters rythmiques) sur 16 pads tactiles.",
+    "steps": [
+      "Place <code>Modulation / Performance → Akai Flex Beat</code> en Insert sur un <strong>Submix</strong> ou sur le <strong>Master</strong>.",
+      "Ouvre son écran tactile : choisis une banque de presets (ex. <em>Tape Stops</em>, <em>Trap</em>, <em>Scratch</em>).",
+      "Pendant que ta séquence tourne, touche directement les pads à l'écran pour déclencher les effets en rythme !"
+    ],
+    "tip": "Tu peux aussi assigner tes 16 pads physiques ou enregistrer tes déclenchements Flex Beat en Automation !"
+  }
+]

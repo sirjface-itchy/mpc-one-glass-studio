@@ -191,10 +191,40 @@ function appendMessage(role, html) {
 
 async function handleUserQuery(query) {
   appendMessage('user', `<p>${escapeHtml(query)}</p>`);
-  const apiKey = localStorage.getItem('mpc_gemini_api_key');
+  const apiKey = localStorage.getItem('mpc_gemini_api_key') || '';
+  const lower = query.toLowerCase();
+
+  const isSpecificQuickPrompt = (
+    (lower.includes('vst2 externes') && lower.includes('3.10.1')) ||
+    (lower.includes('logic pro') && lower.includes('alchemy')) ||
+    (lower.includes('boom-bap') && lower.includes('flavor pro')) ||
+    (lower.includes('différences matérielles') && lower.includes('one+'))
+  );
+  if (isSpecificQuickPrompt && !apiKey) {
+    setTimeout(() => appendMessage('agent', generateExpertResponse(query)), 180);
+    return;
+  }
+
+  if (!location.hostname.endsWith('github.io')) {
+    try {
+      const resp = await fetch('/api/ask-copilot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: query, geminiApiKey: apiKey })
+      });
+      if (resp.ok) {
+        const data = await resp.json();
+        if (data.ok && data.html) {
+          appendMessage('agent', data.html);
+          return;
+        }
+      }
+    } catch (_) {}
+  }
+
   if (apiKey) {
     try {
-      const sysPrompt = `Tu es l'assistant expert MPC One (modèle original, OS 3.10.1 Standalone) d'Arnaud Rigogne. Tu connais son matériel (MPC One série A12201241842841, Numark Scratch, MPK49, MPD218) et ses plugins inMusic (AIR Flavor Pro, Sub Factory, Ether, Sprite, Soft Clipper, Flex Beat, MSXII Fly Tape II & Lo-Fly Dirt, NI Analog Dreams/Cloud Supply/Duets/Ignition Keys/Global Shake, Expansions Pad Thai, Premier Beats, DECAP, LoFi Jazz, Soul Provider 3, etc.). Réponds TOUJOURS en français, de façon ultra claire pour un débutant (Newbie) en détaillant chaque bouton physique (MENU, MAIN, BROWSE, SAMPLER, SAMPLE EDIT, PAD PERFORM, Q-LINK, TC) et chaque touche tactile. Formate ta réponse en HTML simple (<p>, <h4>, <ol>, <li>, <code>, <strong>).`;
+      const sysPrompt = `Tu es l'assistant expert MPC One (modèle original, OS 3.10.1 Standalone) d'Arnaud Rigogne. Réponds TOUJOURS en français, de façon ultra claire pour un débutant (Newbie) en détaillant chaque bouton physique (MENU, MAIN, BROWSE, SAMPLER, SAMPLE EDIT, PAD PERFORM, Q-LINK, TC) et chaque touche tactile. Formate ta réponse en HTML simple (<p>, <h4>, <ol>, <li>, <code>, <strong>).`;
       const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${encodeURIComponent(apiKey)}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -210,8 +240,21 @@ async function handleUserQuery(query) {
       }
     } catch (_) {}
   }
+
+  try {
+    const kbRes = await fetch('./data/mpc_rag_kb.json');
+    if (kbRes.ok) {
+      const kb = await kbRes.json();
+      const match = kb.find(it => (it.keywords || []).some(kw => lower.includes(kw)));
+      if (match) {
+        appendMessage('agent', `<h4>🎯 ${match.title}</h4><p>${match.summary}</p><ol>${match.steps.map(s => `<li>${s}</li>`).join('')}</ol><div class="chat-newbie-box">💡 <strong>Astuce :</strong> ${match.tip}</div>`);
+        return;
+      }
+    }
+  } catch (_) {}
+
   const answer = generateExpertResponse(query);
-  setTimeout(() => appendMessage('agent', answer), 200);
+  setTimeout(() => appendMessage('agent', answer), 180);
 }
 
 function generateExpertResponse(q) {
