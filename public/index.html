@@ -713,12 +713,26 @@
                 </div>
               </div>
 
+              <label class="check-pill" style="margin-bottom: 12px;">
+                <input type="checkbox" id="tplIncludeGroove" checked />
+                🥁 <strong>Pré-remplir un pré-morceau MIDI de départ</strong> (groove Kick / Snare / Hi-Hat sur Track 1 + ligne de basse sur Track 3 selon le style)
+              </label>
+
               <div class="template-actions-row">
                 <button class="btn-primary" id="btnDownloadTemplateZip">⬇️ Télécharger Pack Carte SD (.zip : .xpj + ProjectData + Guide)</button>
                 <button class="btn-secondary-glass" id="btnDownloadTemplateXpj">📄 .xpj seul</button>
                 <button class="btn-secondary-glass" id="btnDeployTemplateDrive">💾 Copier sur Carte SD / Disque</button>
               </div>
               <div class="sdk-compile-result" id="tplExportResult" style="display:none; margin-top: 14px;"></div>
+
+              <div class="newbie-accordion" style="margin-top: 14px;">
+                <strong style="color:var(--cyan);">❓ Quelle différence entre ces 3 boutons ? (Explication simple)</strong>
+                <ul style="margin-top: 8px; padding-left: 18px; display:flex; flex-direction:column; gap:6px; font-size:0.78rem; color:#e2e8f0;">
+                  <li><strong>⬇️ Télécharger Pack Carte SD (.zip) :</strong> télécharge dans ton dossier <em>Téléchargements</em> une archive complète avec les 3 éléments (le fichier <code>.xpj</code> + le dossier compagnon <code>_[ProjectData]/</code> + le mémo texte <code>GUIDE.txt</code>). Tu dézippes et copies tout sur ta Carte SD. <em>(Fonctionne partout, même sur GitHub Pages !)</em></li>
+                  <li><strong>📄 .xpj seul :</strong> télécharge <em>uniquement</em> le fichier projet <code>.xpj</code> (sans dossier <code>_[ProjectData]</code> ni guide). Pratique pour aller vite sur un template sans samples audio : ta MPC One recréera automatiquement le dossier <code>_[ProjectData]</code> dès que tu feras <strong>Save</strong>.</li>
+                  <li><strong>💾 Copier sur Carte SD / Disque :</strong> ne télécharge rien dans le navigateur — ton Mac écrit <em>directement</em> le <code>.xpj</code> + <code>_[ProjectData]/</code> dans le dossier <code>Templates MPC One/</code> du disque/Carte SD choisi dans le menu déroulant ci-dessus <em>(uniquement quand le serveur local <code>localhost:3030</code> tourne)</em>.</li>
+                </ul>
+              </div>
             </div>
 
             <div class="template-guide-box" id="tplNewbieGuide">

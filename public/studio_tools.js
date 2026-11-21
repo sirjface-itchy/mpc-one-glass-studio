@@ -168,6 +168,62 @@ export async function generateTemplateClientSide(payload) {
     }
   }
 
+  if (payload.includeGroove !== false && d.sequences?.[0]?.value) {
+    const makeNoteEv = (time, note, vel = 0.9, length = 240) => ({
+      version: 1, time, type: 3, selected: false, muted: false, invented: false,
+      note: {
+        version: 1, note, velocity: vel, length, probability: 100, ratchet: 1,
+        modifierValue0: 0.5, modifierActiveState0: false, modifierValue1: 0.5, modifierActiveState1: false,
+        modifierValue2: 0.0, modifierActiveState2: false, modifierValue3: 0.0, modifierActiveState3: false,
+        modifierValue4: 0.0, modifierActiveState4: false, modifierValue5: 0.5, modifierActiveState5: false,
+        modifierValue6: 1.0, modifierActiveState6: false, modifierValue7: 0.0, modifierActiveState7: false,
+        modifierValue8: 0.0, modifierActiveState8: false, modifierValue9: 0.0, modifierActiveState9: false,
+        modifierValue10: 0.0, modifierActiveState10: false, modifierValue11: 0.0, modifierActiveState11: false,
+        modifierValue12: 0.0, modifierActiveState12: false, modifierValue13: 0.0, modifierActiveState13: false,
+        modifierValue14: 0.0, modifierActiveState14: false, modifierValue15: 0.0, modifierActiveState15: false,
+        'EnumCerealisationWrapper(selectedModifierType)': 'Tuning (coarse)'
+      }
+    });
+    const style = payload.templateId || 'boombap';
+    const barPulses = 3840;
+    const totalPulses = bars * barPulses;
+    const drumEvents = [], bassEvents = [];
+    const patterns = {
+      boombap:    { k: [0, 1440, 2400, 3360], s: [960, 2880], h: [0, 480, 960, 1440, 1920, 2400, 2880, 3360], b: [[0, 36, 960], [1440, 39, 960], [2400, 41, 960]] },
+      lofi:       { k: [0, 1440, 2160],       s: [960, 2880], h: [0, 520, 960, 1480, 1920, 2440, 2880, 3400], b: [[0, 36, 1440], [1920, 43, 1440]] },
+      trap:       { k: [0, 1200, 2640],       s: [1920],      h: [0, 240, 480, 720, 960, 1200, 1440, 1680, 1920, 2160, 2400, 2640, 2880, 3120, 3360, 3600], b: [[0, 36, 1200], [1200, 36, 1200], [2640, 37, 960]] },
+      neosoul:    { k: [0, 1680, 2400],       s: [960, 2880], h: [0, 480, 960, 1440, 1920, 2400, 2880, 3360], b: [[0, 38, 1200], [1920, 41, 1440]] },
+      synthwave:  { k: [0, 960, 1920, 2880],  s: [960, 2880], h: [0, 480, 960, 1440, 1920, 2400, 2880, 3360], b: [[0, 33, 480], [480, 33, 480], [960, 33, 480], [1440, 33, 480], [1920, 36, 480], [2400, 36, 480], [2880, 38, 480], [3360, 38, 480]] },
+      afro:       { k: [0, 720, 1440, 2400, 3120], s: [720, 1680, 2640], h: [0, 480, 960, 1440, 1920, 2400, 2880, 3360], b: [[0, 36, 720], [1440, 41, 720], [2400, 39, 960]] },
+      frenchtouch:{ k: [0, 960, 1920, 2880],  s: [960, 2880], h: [480, 1440, 2400, 3360], b: [[0, 36, 480], [720, 36, 480], [1440, 39, 480], [2400, 41, 720]] },
+      techno:     { k: [0, 960, 1920, 2880],  s: [960, 2880], h: [480, 1440, 2400, 3360], b: [[240, 36, 240], [720, 36, 240], [1200, 36, 240], [1680, 36, 240], [2160, 36, 240], [2640, 36, 240], [3120, 36, 240], [3600, 36, 240]] },
+      westcoast:  { k: [0, 1680, 2160],       s: [960, 2880], h: [0, 480, 960, 1440, 1920, 2400, 2880, 3360], b: [[0, 36, 960], [1440, 39, 480], [1920, 41, 960], [3120, 43, 480]] }
+    };
+    const pat = patterns[style] || patterns.boombap;
+    for (let bar = 0; bar < bars; bar++) {
+      const base = bar * barPulses;
+      pat.k.forEach(t => drumEvents.push(makeNoteEv(base + t, 36, 0.95, 240)));
+      pat.s.forEach(t => drumEvents.push(makeNoteEv(base + t, 37, 0.90, 240)));
+      pat.h.forEach(t => drumEvents.push(makeNoteEv(base + t, 42, 0.72, 180)));
+      pat.b.forEach(([t, n, len]) => bassEvents.push(makeNoteEv(base + t, n, 0.88, len)));
+    }
+    drumEvents.sort((a, b) => a.time - b.time);
+    bassEvents.sort((a, b) => a.time - b.time);
+    const makeClip = (trackName, events) => ({
+      key: trackName,
+      value: {
+        version: 1, launchQuantisation: 1, startPulses: 0, endPulses: totalPulses,
+        loopStartPulses: 0, loopEndPulses: totalPulses, loop: true, legato: true, launch: 0,
+        name: trackName, colour: 0,
+        eventList: { length: 9223372036854775807, events }
+      }
+    });
+    d.sequences[0].value.trackClipMaps = [[
+      makeClip(d.tracks[0].name, drumEvents),
+      makeClip(d.tracks[2].name, bassEvents)
+    ]];
+  }
+
   const xpjPlain = new TextEncoder().encode(tpl.header + JSON.stringify(tpl.root));
   const cs = new CompressionStream('gzip');
   const writer = cs.writable.getWriter();

@@ -2018,13 +2018,13 @@ const MPC_TEMPLATES = [
       { name: 'Keys / Rhodes (Hype)', instrument: 'Hype', fx: ['AIR Flavor', 'AIR Delay'] }
     ],
     steps: [
-      'Appuie sur <code>BROWSE</code> → <strong>Expansions</strong> → charge un kit <code>Marco Polo Pad Thai Vol. 3</code> ou <code>Premier Beats</code> sur <strong>Track 1 (Drums)</strong>.',
-      'Appuie sur <code>TC</code> (Timing Correct) → règle <strong>Swing</strong> à <code>60%</code> pour le rebond Boom-Bap.',
-      'Sur <strong>Track 2 (Sample Chops)</strong> : charge un chop <code>Soul Provider 3</code> ou sample ta <strong>Numark Scratch</strong> via <code>SAMPLER</code> (l\'effet <code>AIR Flavor</code> + EQ sont déjà pré-chargés en Insert !).',
-      'Appuie sur <code>MAIN</code> → sélectionne <strong>Track 3 (Bass Sub Factory)</strong> → appuie sur <code>PAD PERFORM</code> → choisis <strong>Notes / Minor Natural</strong> pour jouer ta ligne de basse aux pads.',
-      'Optionnel : ajoute <code>MSXII Lo-Fly Dirt</code> / <code>AIR Flavor Pro</code> / <code>AIR Soft Clipper</code> depuis le XL Channel Strip pour encore plus de grain.'
+      '<strong>Pré-morceau inclus :</strong> Track 1 (Drums) et Track 3 (Bass) contiennent déjà un groove Boom-Bap 4 mesures prêt à tourner dès que tu charges un kit et appuies sur <code>PLAY</code> !',
+      '<strong>Track 1 (Drums) :</strong> appuie sur <code>BROWSE</code> → <strong>Expansions</strong> → <code>Marco Polo Pad Thai Deluxe Vol 3</code> → charge <code>BoomBap-Kit-MP At Ease 92 F#m.xpm</code> ou <code>BoomBap-Kit-MP Big Boy 78 Dm.xpm</code> (ou dans <code>Premier Beats</code> : <code>HipHop-Kit-PB Bluntz 90 Dm.xpm</code> / <code>HipHop-Kit-PB Amazin 90 C.xpm</code>).',
+      '<strong>Réglages FX Track 1 (XL Channel Strip) :</strong> sur <code>SP1200</code> règle <em>Mode : SP1200 Ring</em>, <em>Mix : 35%</em> ; sur <code>Compressor Vintage</code> : <em>Threshold -18 dB, Ratio 4:1, Attack 12 ms, Release 90 ms</em> ; ou ajoute <code>MSXII Lo-Fly Dirt</code> (preset <em>12-Bit Crunch</em>, Drive 35%) + <code>AIR Soft Clipper</code> (Drive +3.5 dB, Out -1.0 dB).',
+      '<strong>Track 2 (Sample Chops) :</strong> dans <code>Soul Provider 3</code>, charge <code>HipHop-Kit-MSX Budget 86.xpm</code> ou <code>HipHop-Kit-MSX Condo 84.xpm</code>. Sur <code>AIR Flavor</code> (ou <code>AIR Flavor Pro</code>) : active <em>Vinyl Level 15%</em>, <em>Flutter 18%</em>, <em>Timbre : Radio / Tube</em>, <em>Mix 45%</em>. Sur <code>PEQ 4-Band</code> : coupe-bas <code>HPF 110 Hz</code> pour laisser la place à la basse.',
+      '<strong>Track 3 (Bass — AIR Sub Factory) :</strong> choisis un preset <em>BoomBap Sub</em> ou <em>Warm 808</em>, règle <em>Drive 30%</em>, <em>Cutoff 450 Hz</em>, <em>Glide 35 ms</em>. Appuie sur <code>TC</code> et règle <strong>Swing : 60%</strong>.'
     ],
-    tip: 'Tourne les 4 boutons Q-LINK en mode Track sur Sub Factory pour doser le Drive et le Glide en direct.'
+    tip: 'En fin de mesure 4, ajoute Akai Flex Beat (banque Tape Stops) sur le Master pour déclencher un freinage vinyle au doigt.'
   },
   {
     id: 'lofi',
@@ -2034,20 +2034,21 @@ const MPC_TEMPLATES = [
     bars: 4,
     swing: '57%',
     desc: 'Accords feutrés LoFi Jazz + Warble cassette + Grain vinyle + Basse ronde.',
-    tags: ['LoFi Jazz', 'Dojo Dust', 'AIR Flavor', 'AIR Lo-Fi', 'Sub Factory', 'Flex Beat'],
+    tags: ['LoFi Jazz', 'Tape Series', 'AIR Flavor', 'AIR Lo-Fi', 'Sub Factory', 'Fly Tape II'],
     tracks: [
       { name: 'Drums (LoFi Dusty)', fx: ['AIR Lo-Fi', 'Bus Compressor'] },
       { name: 'Jazz Chops (LoFi Jazz)', fx: ['AIR Flavor', 'AIR Diff Delay'] },
       { name: 'Warm Bass (Sub Factory)', instrument: 'Sub Factory', fx: ['PEQ 4-Band'] },
-      { name: 'Keys (Dojo / TubeSynth)', instrument: 'TubeSynth', fx: ['AIR Flavor'] }
+      { name: 'Keys (Cassette / TubeSynth)', instrument: 'TubeSynth', fx: ['AIR Flavor'] }
     ],
     steps: [
-      'Sur <strong>Track 1 (Drums)</strong> : appuie sur <code>BROWSE</code> → <strong>Expansions → LoFi Jazz</strong> → charge un kit doux (<code>AIR Lo-Fi</code> et <code>Bus Compressor</code> sont déjà câblés).',
-      'Sur <strong>Track 2 (Jazz Chops)</strong> : charge une boucle de piano/trompette de <code>LoFi Jazz</code> ou <code>Soul Provider 3</code> → active <strong>Super Warp</strong> dans <code>SAMPLE EDIT</code>.',
-      'Sur <strong>Track 4 (Keys)</strong> : tu peux remplacer par ton plugin <code>Dojo Dust Instruments</code> (via <code>BROWSE</code>) ou <code>NI Cloud Supply</code> dans la liste des Plugins.',
-      'Sur le Master ou Submix 1 : ajoute <code>MSXII Fly Tape II</code> ou <code>Flex Beat</code> pour faire des freinages cassette en fin de mesure.'
+      '<strong>Pré-morceau inclus :</strong> un rythme Lo-Fi lent (78 BPM) + basse ronde sont déjà programmés sur Track 1 & Track 3.',
+      '<strong>Track 1 (Drums) :</strong> appuie sur <code>BROWSE</code> → <strong>Expansions → LoFi Jazz</strong> → charge <code>HipHop-Kit-JW BlueNotes Gm 78.xpm</code> ou <code>HipHop-Kit-JW Contemplate Bbm 75.xpm</code> (ou dans <code>Tape Series</code> : <code>HipHop-Kit-MSXII Cracklin 88.xpm</code>).',
+      '<strong>Réglages FX Track 1 :</strong> sur <code>AIR Lo-Fi</code> règle <em>Bit Depth : 12 bit</em>, <em>Sample Rate : 22 kHz</em>, <em>Mix : 30%</em> ; sur <code>Bus Compressor</code> : <em>Threshold -20 dB, Ratio 3:1, Makeup +2.5 dB</em>.',
+      '<strong>Track 2 (Jazz Chops) :</strong> charge <code>LoFi-Kit-LS Final Call 90.xpm</code> (<em>TrapSoul & LoFi Beats</em>) ou <code>HipHop-Kit-JW Drifting Gb 80.xpm</code>. Sur <code>AIR Flavor</code> : <em>Flutter 25%</em>, <em>Vinyl Crackle 18%</em>, <em>LowPass 5.5 kHz</em>. Sur <code>AIR Diff Delay</code> : <em>Time 1/8D, Feedback 28%, Mix 22%</em>.',
+      '<strong>Track 4 (Keys) :</strong> charge le Keygroup <code>Inst-Keys-UC Cassette DX.xpm</code> ou <code>Inst-Keys-UC Timeless Keys.xpm</code> (<em>The Underground Crates</em>) ou <code>Keys-DX7 Orange EP.xpm</code> (<em>MPC DX7</em>).'
     ],
-    tip: 'Dans AIR Flavor (Insert Track 2), pousse légèrement le paramètre Flutter pour ce côté vieux magnétophone.'
+    tip: 'Ajoute MSXII Fly Tape II sur le Master (mode Cassette + Warble 20%) et utilise le pad Brake pour les transitions.'
   },
   {
     id: 'trap',
@@ -2057,20 +2058,21 @@ const MPC_TEMPLATES = [
     bars: 8,
     swing: '50%',
     desc: 'Kicks/Hats chirurgicaux DECAP + 808 glissantes Sub Factory + Nappes Cloud Supply.',
-    tags: ['DECAP Knock', 'Cloud Supply', 'Urban Roulette', 'Sub Factory', 'AIR Maximizer'],
+    tags: ['DECAP Knock', 'Trap Drums', 'Cloud Supply', 'Sub Factory', 'AIR Maximizer'],
     tracks: [
       { name: 'Drums (DECAP Knock)', fx: ['AIR Maximizer', 'PEQ 4-Band'] },
-      { name: 'Percs / FX (Urban)', fx: ['AIR Stutter', 'AIR Delay'] },
+      { name: 'Percs / FX (Trap)', fx: ['AIR Stutter', 'AIR Delay'] },
       { name: '808 Glide (Sub Factory)', instrument: 'Sub Factory', fx: ['AIR Distortion'] },
       { name: 'Cloud Keys (Hype/Cloud)', instrument: 'Hype', fx: ['AIR Diff Delay'] }
     ],
     steps: [
-      'Sur <strong>Track 1 (Drums)</strong> : appuie sur <code>BROWSE</code> → charge un kit <code>DECAP - Drums That Knock</code> ou <code>Urban Roulette</code>.',
-      'Pour les Hi-Hats rapides Trap : maintiens le bouton physique <code>NOTE REPEAT</code> et touche ton Pad de Hi-Hat tout en changeant le division temps (<code>1/16</code>, <code>1/32</code>, <code>1/16T</code>) à l\'écran.',
-      'Sur <strong>Track 3 (808 Sub Factory)</strong> : active <code>PAD PERFORM</code> en mode <strong>Chords / Notes</strong> et monte le <em>Glide</em> pour tes glissades de 808.',
-      'Sur <strong>Track 4</strong> : sélectionne ton plugin <code>Native Instruments → Cloud Supply</code> dans le sélecteur de plugin sur <code>MAIN</code>.'
+      '<strong>Pré-morceau inclus :</strong> pattern Trap 140 BPM (Snare sur temps 3 en half-time, Hi-Hats 1/16 rapides, Kick & 808 synchronisés) prêt sur Track 1 & 3.',
+      '<strong>Track 1 (Drums) :</strong> appuie sur <code>BROWSE</code> → <strong>Expansions → Drums That Knock</strong> → charge <code>HipHop-Kit-DTK Big Bop 87.xpm</code> ou <code>HipHop-Kit-DTK Boom Bounce 94.xpm</code> (ou dans <code>Trap Drums</code> : <code>MPC TrapKit 1.xpm</code> / <code>MPC TrapKit Rolls.xpm</code>).',
+      '<strong>Réglages FX Track 1 :</strong> sur <code>AIR Maximizer</code> règle <em>Threshold -3.5 dB, Ceiling -0.5 dB</em> (ou remplace par <code>AIR Soft Clipper</code> : <em>Drive +4.5 dB, Out -0.5 dB</em>). Sur <code>PEQ 4-Band</code> : boost léger <code>+2 dB à 8 kHz</code> pour le brillant des Hi-Hats.',
+      '<strong>Track 3 (808 — Sub Factory) :</strong> preset <em>Clean Trap 808</em> ou <em>Disto 808</em> (ou Keygroup <code>Inst-Bass-F9 808 1.xpm</code> dans <em>F9 Instruments</em>). Règle <em>Glide : 45 ms</em> ; sur <code>AIR Distortion</code> : <em>Mode Soft, Drive 22%, Mix 30%</em> pour qu\'elle perce sur téléphone.',
+      '<strong>Track 4 (Mélodie) :</strong> bascule le plugin sur <code>NI Cloud Supply</code> (preset <em>Atmospheric Bells</em> ou <em>Cloud Keys</em>) + <code>AIR Diff Delay</code> (<em>1/4, Feedback 35%, Mix 28%</em>).'
     ],
-    tip: 'Remplace AIR Maximizer par AIR Soft Clipper sur Track 1 si tu veux un Kick encore plus agressif.'
+    tip: 'Maintiens le bouton physique NOTE REPEAT sur un pad Hi-Hat et change la division (1/16, 1/32, 1/16T) pour ajouter des roulements Trap.'
   },
   {
     id: 'neosoul',
@@ -2080,7 +2082,7 @@ const MPC_TEMPLATES = [
     bars: 8,
     swing: '59%',
     desc: 'Voix/Claviers hybrides Duets & Ignition Keys + Basse moelleuse + Sidechain léger.',
-    tags: ['Duets', 'Ignition Keys', 'Soul Provider 3', 'Sub Factory', 'Compressor Vintage'],
+    tags: ['Duets', 'Ignition Keys', 'Soul Provider 3', 'F9 Instruments', 'Compressor Vintage'],
     tracks: [
       { name: 'Drums (Soul Groove)', fx: ['Compressor Vintage', 'PEQ 4-Band'] },
       { name: 'Vocal / Brass Chops', fx: ['AIR Diff Delay', 'AIR Flavor'] },
@@ -2088,12 +2090,13 @@ const MPC_TEMPLATES = [
       { name: 'R&B Keys (Hype/Duets)', instrument: 'Hype', fx: ['AIR Delay'] }
     ],
     steps: [
-      'Branche ton clavier <strong>MPK49</strong> en USB à l\'arrière de la MPC One pour jouer facilement les accords Neo-Soul à 2 mains !',
-      'Sur <strong>Track 4</strong> : bascule le plugin sur <code>NI Duets</code> ou <code>NI Ignition Keys</code> (ou utilise <code>PAD PERFORM → Progressions</code> si tu joues aux pads).',
-      'Sur <strong>Track 1 (Drums)</strong> : charge <code>Soul Provider 3</code> ou <code>Pad Thai Vol. 1</code> et règle le Swing (bouton <code>TC</code>) autour de <code>58-60%</code>.',
-      'Envoie Track 2 et Track 4 vers <strong>Return 1</strong> avec <code>AIR Reverb Pro</code> ou <code>AIR Ether</code> pour une belle largeur stéréo.'
+      '<strong>Pré-morceau inclus :</strong> groove Neo-Soul détendu (86 BPM) + ligne de basse ronde prêts sur Track 1 & Track 3.',
+      '<strong>Track 1 (Drums) :</strong> dans <code>Soul Provider 3</code>, charge <code>HipHop-Kit-MSX Budget 86.xpm</code> ou <code>HipHop-Kit-MSX Chukstuh 81.xpm</code> (ou dans <code>MSX Soulful Experience</code> : <code>HipHop-Kit-MSX Drama Kit 88.xpm</code>).',
+      '<strong>Réglages FX Track 1 :</strong> sur <code>Compressor Vintage</code> : <em>Threshold -16 dB, Ratio 3:1, Attack 15 ms, Release 100 ms</em> pour coller le kit ; sur <code>PEQ 4-Band</code> : coupe léger <code>-2 dB à 300 Hz</code>.',
+      '<strong>Track 3 (Basse) :</strong> utilise <code>Bassline</code> (Cutoff 600 Hz, Sub +20%) ou charge le Keygroup <code>Bass-Reaper Upright Bass.xpm</code> (<em>The Reaper</em>) / <code>Inst-Bass-F9 Spike Bass.xpm</code> (<em>F9 Instruments</em>).',
+      '<strong>Track 4 (Keys / Voix) :</strong> bascule le plugin sur <code>NI Duets</code> ou <code>NI Ignition Keys</code>, ajoute <code>AIR Tape Double Track</code> (<em>Width 45%, Detune 15%</em>) et envoie <code>25%</code> vers <code>AIR Reverb Pro</code> (preset <em>Warm Plate, Decay 2.2s</em>) en Send 1.'
     ],
-    tip: 'Utilise AIR Tape Double Track sur les voix ou leads de Duets pour élargir le refrain.'
+    tip: 'Branche ton MPK49 en USB ou utilise notre Assistant Accords PAD PERFORM (Onglet 6) en mode Neo-Soul Maj9 !'
   },
   {
     id: 'synthwave',
@@ -2103,20 +2106,21 @@ const MPC_TEMPLATES = [
     bars: 8,
     swing: '50%',
     desc: 'Basses analogiques Juno/Prophet + Drums Gated 80s + Nappes Analog Dreams.',
-    tags: ['Analog Dreams', 'Neo Sunset', 'F9 Instruments', 'TubeSynth', 'AIR Flavor'],
+    tags: ['Analog Dreams', 'Neo Sunset', '80s Grid Kit', 'TubeSynth', 'AIR Ether'],
     tracks: [
-      { name: 'Drums (Neo Sunset)', fx: ['Bus Compressor', 'AIR Maximizer'] },
+      { name: 'Drums (80s Grid / Neo)', fx: ['Bus Compressor', 'AIR Maximizer'] },
       { name: 'FX / Risers 80s', fx: ['AIR Diff Delay', 'AIR Stutter'] },
       { name: 'Analog Bass (Bassline)', instrument: 'Bassline', fx: ['AIR Tube Drive'] },
       { name: 'Retro Synth (TubeSynth)', instrument: 'TubeSynth', fx: ['AIR Flavor', 'AIR Delay'] }
     ],
     steps: [
-      'Sur <strong>Track 1 (Drums)</strong> : appuie sur <code>BROWSE</code> → <strong>Expansions → Neo Sunset</strong> → charge un kit 80s avec snare réverbérée.',
-      'Sur <strong>Track 4</strong> : sélectionne ton plugin <code>NI Analog Dreams (MPC Edition)</code> dans le sélecteur de plugin de <code>MAIN</code>.',
-      'Sur <strong>Track 3 (Analog Bass)</strong> : active <code>ARP</code> (Arpégiateur) dans <code>PAD PERFORM</code> en mode <code>1/8</code> ou <code>1/16</code> pour créer une basse Synthwave qui court toute seule.',
-      'Ajoute <code>AIR Ether</code> en Send 1 pour des nappes spatiales énormes.'
+      '<strong>Pré-morceau inclus :</strong> beat 4-temps 80s (108 BPM) + ligne de basse croches courantes (1/8) déjà écrits sur Track 1 & Track 3.',
+      '<strong>Track 1 (Drums) :</strong> appuie sur <code>BROWSE</code> → <strong>Expansions → MPC Beats Producer Kits</strong> → charge <code>80s-Kit-F9 Grid Kit.xpm</code> ou <code>80s-Kit-F9 Grid and Hits Kit.xpm</code> (ou dans <code>Neo Sunset</code> : <code>HipHop-Kit-BlueMoon Cm 90.xpm</code> / <code>HipHop-Kit-Academic Gm 90.xpm</code>).',
+      '<strong>Réglages FX Track 1 :</strong> sur <code>Bus Compressor</code> : <em>Threshold -18 dB, Ratio 4:1, Attack 10 ms, Release 80 ms, Makeup +3 dB</em> ; sur <code>AIR Maximizer</code> : <em>Threshold -2.5 dB, Out -0.5 dB</em>.',
+      '<strong>Track 3 (Analog Bass) :</strong> sur <code>Bassline</code> (Sawtooth + Sub, Cutoff 850 Hz, Resonance 25%) + <code>AIR Tube Drive</code> (<em>Drive 28%, Tone 60%, Mix 55%</em>) — ou charge <code>Inst-Bass-F9 FM Bonk.xpm</code> dans <em>F9 Instruments</em>.',
+      '<strong>Track 4 (Nappes & Leads) :</strong> sélectionne <code>NI Analog Dreams</code> (preset <em>80s Brass</em> ou <em>Synthwave Pad</em>) ; sur <code>AIR Delay</code> règle <em>Time 1/8D, Feedback 35%, Mix 30%</em> + ajoute <code>AIR Ether</code> en Send 1 (<em>Shimmer 25%, Mix 100% en Return</em>).'
     ],
-    tip: 'Les 4 Q-Links d\'Analog Dreams contrôlent directement Blend A/B, Cutoff, Resonance et Noise.'
+    tip: 'Les 4 Q-Links d\'Analog Dreams (Bank 1) contrôlent Blend A/B, Cutoff, Resonance et Noise en direct.'
   },
   {
     id: 'afro',
@@ -2126,7 +2130,7 @@ const MPC_TEMPLATES = [
     bars: 8,
     swing: '55%',
     desc: 'Marimbas/Kalimbas Global Shake + Percussions organiques + Log Drum / Sub Bass.',
-    tags: ['Global Shake', 'Sub Factory', 'AIR Delay', 'Bus Compressor', 'F9 Instruments'],
+    tags: ['Global Shake', 'Sub Factory', 'F9 Instruments', 'AIR Delay', 'Bus Compressor'],
     tracks: [
       { name: 'Drums & Shaker', fx: ['Bus Compressor', 'AIR Maximizer'] },
       { name: 'Afro Perc Loops', fx: ['PEQ 4-Band', 'AIR Delay'] },
@@ -2134,12 +2138,13 @@ const MPC_TEMPLATES = [
       { name: 'Kalimba / Keys (Hype)', instrument: 'Hype', fx: ['AIR Diff Delay'] }
     ],
     steps: [
-      'Sur <strong>Track 4</strong> : sélectionne ton plugin <code>NI Global Shake (MPC Edition)</code> pour les kalimbas, marimbas et guitares afro.',
-      'Sur <strong>Track 3 (Sub Factory)</strong> : cherche un preset typé <em>Log Drum / Perc Bass</em> pour la frappe Amapiano/Afrobeats.',
-      'Appuie sur <code>STEP SEQ</code> (bouton physique) pour programmer facilement ton kick syncopé et tes rimshots sur la grille 16 pas.',
-      'Règle le Swing (<code>TC</code>) autour de <code>54-56%</code> pour le groove chaloupé.'
+      '<strong>Pré-morceau inclus :</strong> groove Afrobeats syncopé (Tresillo Kick + Rimshot) et basse rebondissante prêts sur Track 1 & Track 3.',
+      '<strong>Track 1 (Drums) :</strong> charge un kit percussif dans <code>Drums That Knock</code> (<code>HipHop-Kit-DTK Gully 101.xpm</code>) ou <code>Neo Sunset</code> (<code>HipHop-Kit-All Percussion.xpm</code>). Règle <code>TC → Swing : 55%</code>.',
+      '<strong>Réglages FX Track 1 & 2 :</strong> sur <code>Bus Compressor</code> : <em>Threshold -16 dB, Ratio 3:1, Attack 20 ms</em> (laisse passer les percussions). Sur Track 2 (<code>PEQ 4-Band</code>) : coupe-bas <code>HPF 180 Hz</code> + <code>AIR Delay</code> (<em>1/16D, Feedback 22%, Mix 18%</em>).',
+      '<strong>Track 3 (Log Drum / Sub) :</strong> sur <code>AIR Sub Factory</code> choisis un preset <em>Perc Bass / Log Drum</em> (ou <code>Inst-Bass-F9 808 2.xpm</code>), <code>AIR Tube Drive</code> à <em>Drive 20%, Mix 40%</em>.',
+      '<strong>Track 4 (Kalimba / Guitares) :</strong> bascule le plugin sur <code>NI Global Shake (MPC Edition)</code> + <code>AIR Diff Delay</code> (<em>1/8, Feedback 30%, Mix 25%</em>).'
     ],
-    tip: 'Utilise la Bank 4 (Groove) des Q-Links de Global Shake pour humaniser tes mélodies.'
+    tip: 'Utilise la Bank 4 (Groove) des Q-Links de Global Shake pour ajouter du Humanize sur tes marimbas.'
   },
   {
     id: 'frenchtouch',
@@ -2149,7 +2154,7 @@ const MPC_TEMPLATES = [
     bars: 8,
     swing: '53%',
     desc: 'Pompage Sidechain (Mother Ducker) + Basse Funk/Slap F9 + Chops filtrés Glitterball.',
-    tags: ['Glitterball', 'F9 Instruments', 'Mother Ducker', 'Ignition Keys', 'Bus Compressor'],
+    tags: ['Glitterball', 'Deep House', 'F9 Instruments', 'Mother Ducker', 'Bus Compressor'],
     tracks: [
       { name: 'House Drums (Glitterball)', fx: ['Mother Ducker Input', 'Bus Compressor'] },
       { name: 'Disco Chops (Glitterball)', fx: ['Mother Ducker', 'AIR Flavor'] },
@@ -2157,12 +2162,13 @@ const MPC_TEMPLATES = [
       { name: 'House Chords (Hype)', instrument: 'Hype', fx: ['Mother Ducker', 'AIR Delay'] }
     ],
     steps: [
-      '<strong>Magie pré-câblée :</strong> <code>Mother Ducker Input</code> est déjà sur <strong>Track 1 (Drums)</strong> et <code>Mother Ducker</code> sur les pistes 2, 3 et 4 pour le pompage French Touch automatique à chaque coup de Kick !',
-      'Sur <strong>Track 1 & 2</strong> : appuie sur <code>BROWSE</code> → <strong>Expansions → Glitterball</strong> pour charger des kits Disco/House et des boucles de guitare/cordes.',
-      'Sur <strong>Track 3</strong> : tu peux aussi charger une basse slap <code>F9 Instruments</code> via <code>BROWSE</code>.',
-      'En live, ouvre <code>XYFX</code> (bouton physique) pour filtrer le mix au doigt comme Daft Punk / Justice.'
+      '<strong>Pré-morceau inclus :</strong> Kick 4-temps House (122 BPM), Clap sur 2 & 4, Open Hat à contre-temps et basse Funk déjà écrits !',
+      '<strong>Track 1 & 2 (Drums & Disco Chops) :</strong> appuie sur <code>BROWSE</code> → <strong>Expansions → Glitterball</strong> → charge <code>Funk-Kit-GlitterBall Kit 01 120.xpm</code> ou <code>Funk-Kit-GlitterBall Kit 04 124.xpm</code> (ou dans <code>Deep House Drums</code> : <code>Deep House Kit 1.xpm</code>).',
+      '<strong>Réglages Sidechain (Mother Ducker — déjà câblé !) :</strong> sur Tracks 2, 3 et 4, ouvre <code>Mother Ducker</code> et règle <em>Threshold -26 dB, Ratio 5:1, Attack 2 ms, Release 95 ms</em> pour le pompage French Touch classique.',
+      '<strong>Track 3 (Funk Bass) :</strong> charge <code>Inst-Bass-F9 Spike Bass.xpm</code> (<em>F9 Instruments</em>) ou <code>Bass-DX7 Bumble.xpm</code> (<em>MPC DX7</em>) ; sur <code>Compressor Vintage</code> : <em>Threshold -18 dB, Ratio 4:1</em>.',
+      '<strong>Performance Live :</strong> appuie sur <code>XYFX</code> → choisis le preset <em>Lowpass Filter Sweep</em> pour filtrer tout le morceau au doigt façon Daft Punk.'
     ],
-    tip: 'Dans Mother Ducker (Insert Track 2/3/4), ajuste le Ratio et le Release pour doser l\'effet de pompage.'
+    tip: 'Si le pompage est trop fort sur les accords, remonte simplement le Threshold de Mother Ducker vers -18 dB.'
   },
   {
     id: 'techno',
@@ -2171,20 +2177,21 @@ const MPC_TEMPLATES = [
     bpm: 132,
     bars: 4,
     swing: '50%',
-    desc: 'Kicks industriels Cr2 Techno + Arpèges sombres LABYRINTH + Distorsion & Stutter.',
-    tags: ['Cr2 Techno', 'Dark Parallax', 'LABYRINTH', 'AIR Distortion', 'AIR Stutter'],
+    desc: 'Kicks industriels + Basses sombres Labyrinth + Distorsion & Stutter.',
+    tags: ['Labyrinth', 'Deep House / Cr2', 'AIR Distortion', 'AIR Stutter', 'Granulator'],
     tracks: [
-      { name: 'Techno Kick/Rumble (Cr2)', fx: ['AIR Distortion', 'Bus Compressor'] },
-      { name: 'Industrial Percs (Parallax)', fx: ['AIR Stutter', 'AIR Diff Delay'] },
+      { name: 'Techno Kick/Rumble', fx: ['AIR Distortion', 'Bus Compressor'] },
+      { name: 'Industrial Percs', fx: ['AIR Stutter', 'AIR Diff Delay'] },
       { name: 'Acid / Mod Bass (Bassline)', instrument: 'Bassline', fx: ['AIR Tube Drive', 'PEQ 4-Band'] },
       { name: 'Dark Arp (TubeSynth)', instrument: 'TubeSynth', fx: ['Granulator', 'AIR Delay'] }
     ],
     steps: [
-      'Sur <strong>Track 1 (Kick)</strong> : charge un kit de <code>Cr2 Techno</code> via <code>BROWSE</code> → règle le Kick sur les 4 temps (1, 5, 9, 13 dans <code>STEP SEQ</code>).',
-      'Sur <strong>Track 2</strong> : charge des textures de <code>Dark Parallax</code> ou <code>LABYRINTH</code> — l\'insert <code>AIR Stutter</code> est prêt pour hacher les percussions.',
-      'Sur <strong>Track 3 (Acid Bass)</strong> : tourne le Cutoff et la Résonance avec tes <code>Q-LINK</code> pendant que la boucle tourne et enregistre l\'automation (touche l\'icône <strong>Automation Read/Write</strong> rouge en haut à droite de l\'écran !).'
+      '<strong>Pré-morceau inclus :</strong> Kick 4-temps Techno (132 BPM) + basse roulante en doubles-croches à contre-temps déjà programmés !',
+      '<strong>Track 1 (Kick) :</strong> charge <code>Deep House Kit 3.xpm</code> (<em>Deep House Drums</em>) ou un kit <code>Cr2 Techno</code>. Sur <code>AIR Distortion</code> : <em>Mode Hard/Clip, Drive 25%, Tone 35%, Mix 30%</em> pour un kick massif ; sur <code>Bus Compressor</code> : <em>Threshold -16 dB, Ratio 6:1</em>.',
+      '<strong>Track 3 (Acid / Dark Bass) :</strong> charge le Keygroup <code>Inst-Bass-Lab 6ix Bass.xpm</code> ou <code>Inst-Bass-Lab Onyx Bass.xpm</code> (dans <em>Labyrinth</em>) ou utilise <code>Bassline</code> (Saw, Cutoff 420 Hz, Resonance 60%) + <code>AIR Tube Drive</code> (<em>Drive 40%, Mix 65%</em>).',
+      '<strong>Track 2 & 4 (Textures) :</strong> sur <code>AIR Stutter</code> (Track 2) règle <em>Rate 1/16, Mix 40%</em> ; sur <code>Granulator</code> (Track 4) : <em>Grain Size 60 ms, Density 50%, Mix 35%</em> pour des nappes industrielles.'
     ],
-    tip: 'Utilise le moteur Oscillator intégré (MPC 3.9+) dans Program Edit pour sculpter des kicks/percs sans sample.'
+    tip: 'Active l\'icône Automation rouge en haut à droite et tourne le Q-Link Cutoff de la basse en live !'
   },
   {
     id: 'westcoast',
@@ -2194,19 +2201,21 @@ const MPC_TEMPLATES = [
     bars: 4,
     swing: '56%',
     desc: 'Leads sifflants G-Funk + Claviers Scott Storch + Basse Moog lourde + Clap sec.',
-    tags: ['West Coast Funk', 'Scott Storch', 'Sub Factory', 'TubeSynth', 'Compressor Vintage'],
+    tags: ['Scott Storch', 'West Coast Funk', 'Sub Factory', 'TubeSynth', 'Compressor Vintage'],
     tracks: [
-      { name: 'Drums (West Coast / Storch)', fx: ['Compressor Vintage', 'AIR Maximizer'] },
-      { name: 'Talkbox / Hits', fx: ['AIR Delay', 'PEQ 4-Band'] },
+      { name: 'Drums (Storch / West)', fx: ['Compressor Vintage', 'AIR Maximizer'] },
+      { name: 'Piano / Talkbox Hits', fx: ['AIR Delay', 'PEQ 4-Band'] },
       { name: 'G-Funk Moog Bass (Sub Factory)', instrument: 'Sub Factory', fx: ['AIR Tube Drive'] },
       { name: 'Whine Lead (TubeSynth)', instrument: 'TubeSynth', fx: ['AIR Diff Delay'] }
     ],
     steps: [
-      'Sur <strong>Track 1 (Drums)</strong> : appuie sur <code>BROWSE</code> → charge un kit de <code>West Coast Funk</code> ou <code>Scott Storch Presents</code>.',
-      'Sur <strong>Track 4 (Whine Lead)</strong> : active le mode <strong>Mono + Glide/Portamento</strong> dans ton synthé pour obtenir le célèbre sifflement G-Funk aigu.',
-      'Sur <strong>Track 3 (Sub Factory)</strong> : joue des notes longues et graves sous le groove, en gardant le Clap bien sec en avant.'
+      '<strong>Pré-morceau inclus :</strong> groove West Coast rebondissant (96 BPM) + ligne de basse G-Funk déjà écrits sur Track 1 & Track 3.',
+      '<strong>Track 1 (Drums) :</strong> appuie sur <code>BROWSE</code> → <strong>Expansions → Scott Storch Presents</strong> → charge <code>HipHop-Kit-SS Ocean Drive Kit 88.xpm</code> ou <code>HipHop-Kit-SS City Life Kit 120.xpm</code> (ou un kit de <code>West Coast Funk</code>). Règle <code>TC → Swing : 56%</code>.',
+      '<strong>Réglages FX Track 1 :</strong> sur <code>Compressor Vintage</code> : <em>Threshold -16 dB, Ratio 4:1, Attack 8 ms</em> pour un clap ultra sec ; sur <code>AIR Maximizer</code> : <em>Threshold -3 dB, Ceiling -0.5 dB</em>.',
+      '<strong>Track 2 (Pianos / Hits) :</strong> charge <code>HipHop-Kit-SS Piano Loops.xpm</code> (<em>Scott Storch Presents</em>) + <code>PEQ 4-Band</code> (<em>HPF 140 Hz</em>) + <code>AIR Delay</code> (<em>1/8, Feedback 20%, Mix 20%</em>).',
+      '<strong>Track 4 (Whine Lead — TubeSynth) :</strong> sélectionne un preset <em>Sine / Moog Lead</em>, active <strong>Mono + Portamento/Glide (60 ms)</strong> et joue dans les aigus (C5–C6) !'
     ],
-    tip: 'Branche ton MPK Mini MK2 ou MPK49 pour utiliser la molette Pitch Bend sur le Whine Lead !'
+    tip: 'Utilise la molette Pitch Bend de ton MPK49 ou MPK Mini MK2 sur le Whine Lead pour la touche Dr. Dre / Snoop.'
   }
 ];
 
@@ -2284,6 +2293,7 @@ function initTemplatesTab() {
       bars: Number(document.getElementById('tplBars').value) || tpl.bars,
       tracks: tpl.tracks,
       guideText: tpl.steps.map((s, i) => `${i + 1}. ${s.replace(/<[^>]+>/g, '')}`).join('\n'),
+      includeGroove: document.getElementById('tplIncludeGroove')?.checked !== false,
       deployToDrive: mode === 'drive',
       targetDriveId: document.getElementById('tplTargetDrive')?.value || 'workspace'
     };
